@@ -48,7 +48,7 @@ export function EventDeleteForm({ id, title }: EventDeleteFormProps) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className='flex flex-row items-center justify-between'>
-            <h1>Delete {title}</h1>
+            <h2>Delete {title}</h2>
           </AlertDialogTitle>
           Are you sure you want to delete this event?
         </AlertDialogHeader>
