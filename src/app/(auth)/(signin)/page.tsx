@@ -6,10 +6,20 @@ export const metadata: Metadata = {
   description: 'Sign In page for authentication.'
 };
 
+/**
+ * サインイン画面
+ * @returns
+ */
 export default async function Page() {
+  /**
+   * Star数のデフォルト値
+   */
   let stars = 3000; // Default value
 
   try {
+    /**
+     * GithubAPIから情報取得
+     */
     const response = await fetch(
       'https://api.github.com/repos/kiranism/next-shadcn-dashboard-starter',
       {

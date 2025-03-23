@@ -24,6 +24,10 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 
+/**
+ * ログインフォーム
+ * @returns
+ */
 export default function UserAuthForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
@@ -82,7 +86,7 @@ export default function UserAuthForm() {
           <span className='w-full border-t' />
         </div>
         <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background px-2 text-muted-foreground'>
+          <span className='bg-background text-muted-foreground px-2'>
             Or continue with
           </span>
         </div>

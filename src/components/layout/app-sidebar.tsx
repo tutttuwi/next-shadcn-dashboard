@@ -46,6 +46,9 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { Icons } from '../icons';
 
+/**
+ * システム情報
+ */
 export const company = {
   name: 'Acme Inc',
   logo: GalleryVerticalEnd,
@@ -130,6 +133,8 @@ export default function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+
+      {/* サイドバーフッター要素（アカウント名表示領域） */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>

@@ -1,3 +1,4 @@
+import { Icons } from '@/components/icons';
 import { NavItem } from 'types';
 
 export type Product = {
@@ -12,6 +13,9 @@ export type Product = {
 };
 
 //Info: The following data is used for the sidebar navigation and Cmd K bar.
+/**
+ * サイドバー表示用アイテム
+ */
 export const navItems: NavItem[] = [
   {
     title: 'Dashboard',
@@ -54,6 +58,14 @@ export const navItems: NavItem[] = [
     title: 'Kanban',
     url: '/dashboard/kanban',
     icon: 'kanban',
+    shortcut: ['k', 'k'],
+    isActive: false,
+    items: [] // No child items
+  },
+  {
+    title: 'Calendar',
+    url: '/dashboard/calendar',
+    icon: 'calendar',
     shortcut: ['k', 'k'],
     isActive: false,
     items: [] // No child items

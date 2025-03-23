@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowRight,
+  Calendar,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -82,5 +83,6 @@ export const Icons = {
     </svg>
   ),
   twitter: Twitter,
-  check: Check
+  check: Check,
+  calendar: Calendar
 };
