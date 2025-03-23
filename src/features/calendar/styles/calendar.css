@@ -1,3 +1,6 @@
+/* Tailwindv4対応 */
+@reference '../../../app/globals.css';
+
 :root {
   --fc-border-color: lightgray;
   --fc-page-bg-color: none;
@@ -37,17 +40,17 @@
 }
 
 .fc-timegrid-slot-label-cushion {
-  /* @apply text-xs font-light; */
+  @apply text-xs font-light;
 }
 
 /* Setting cell colors */
 
 td.fc-daygrid-day.fc-day {
-  /* @apply hover:bg-secondary ; */
+  @apply hover:bg-secondary;
 }
 
 td.fc-daygrid-day.fc-day.fc-day-today {
-  /* @apply bg-secondary-foreground; */
+  @apply bg-secondary-foreground;
 }
 
 .fc-day-today {
@@ -55,7 +58,7 @@ td.fc-daygrid-day.fc-day.fc-day-today {
 }
 
 .fc-day-other {
-  /* @apply bg-gray-200 dark:bg-secondary ; */
+  @apply dark:bg-secondary bg-gray-200;
 }
 
 .fc-daygrid-day-top {
@@ -63,11 +66,11 @@ td.fc-daygrid-day.fc-day.fc-day-today {
 }
 
 .fc-daygrid-dot-event {
-  /* @apply hover:bg-blue-50 ; */
+  @apply hover:bg-blue-50;
 }
 
 .fc-daygrid-event-harness {
-  /* @apply pr-2 hover:bg-none hover:scale-[1.02] transition-all hover:cursor-pointer  ; */
+  @apply pr-2 transition-all hover:scale-[1.02] hover:cursor-pointer hover:bg-none;
 }
 
 .fc-timegrid-event-harness {
@@ -83,11 +86,11 @@ td.fc-daygrid-day.fc-day.fc-day-today {
 }
 
 .fc-daygrid-event {
-  /* @apply mx-1 ; */
+  @apply mx-1;
 }
 
 .fc-timegrid-event {
-  /* @apply px-1 ; */
+  @apply px-1;
 }
 
 td.fc-daygrid-day.fc-day {
