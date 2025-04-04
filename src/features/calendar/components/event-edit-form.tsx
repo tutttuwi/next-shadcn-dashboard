@@ -32,6 +32,7 @@ import { useEvents } from '@/features/calendar/context/events-context';
 import { ToastAction } from './ui/toast';
 import { CalendarEvent } from '@/features/calendar/utils/data';
 import { Button } from './ui/button';
+import { FilePenLine } from 'lucide-react';
 
 const eventEditFormSchema = z.object({
   id: z.string(),
@@ -120,10 +121,13 @@ export function EventEditForm({
     setEventEditOpen(false);
 
     toast({
-      title: 'Event edited!',
+      // title: 'Event edited!',
+      title: '予定を更新しました！',
       action: (
-        <ToastAction altText={'Click here to dismiss notification'}>
-          Dismiss
+        // <ToastAction altText={'Click here to dismiss notification'}>
+        <ToastAction altText={'クリックして閉じる'}>
+          {/* Dismiss */}
+          閉じる
         </ToastAction>
       )
     });
@@ -138,14 +142,18 @@ export function EventEditForm({
             variant='default'
             onClick={() => setEventEditOpen(true)}
           >
-            Edit Event
+            {/* Edit Event */}
+            予定を編集
           </Button>
         </AlertDialogTrigger>
       )}
 
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Edit {event?.title}</AlertDialogTitle>
+          {/* <AlertDialogTitle>Edit {event?.title}</AlertDialogTitle> */}
+          <AlertDialogTitle>
+            <FilePenLine className='inline-block' /> {event?.title}
+          </AlertDialogTitle>
         </AlertDialogHeader>
 
         <Form {...form}>
@@ -155,9 +163,14 @@ export function EventEditForm({
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  {/* <FormLabel>Title</FormLabel> */}
+                  <FormLabel>タイトル</FormLabel>
                   <FormControl>
-                    <Input placeholder='Standup Meeting' {...field} />
+                    {/* <Input placeholder='Standup Meeting' {...field} /> */}
+                    <Input
+                      placeholder='タイトルを入力してください'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -168,10 +181,12 @@ export function EventEditForm({
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  {/* <FormLabel>Description</FormLabel> */}
+                  <FormLabel>詳細説明</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder='Daily session'
+                      // placeholder='Daily session'
+                      placeholder='詳細説明を入力してください'
                       className='resize-none'
                       {...field}
                     />
@@ -185,12 +200,13 @@ export function EventEditForm({
               name='start'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel htmlFor='datetime'>Start</FormLabel>
+                  {/* <FormLabel htmlFor='datetime'>Start</FormLabel> */}
+                  <FormLabel htmlFor='datetime'>開始日時</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
                       onChange={field.onChange}
-                      hourCycle={12}
+                      hourCycle={24}
                       granularity='minute'
                     />
                   </FormControl>
@@ -203,12 +219,13 @@ export function EventEditForm({
               name='end'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel htmlFor='datetime'>End</FormLabel>
+                  {/* <FormLabel htmlFor='datetime'>End</FormLabel> */}
+                  <FormLabel htmlFor='datetime'>終了日時</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
                       onChange={field.onChange}
-                      hourCycle={12}
+                      hourCycle={24}
                       granularity='minute'
                     />
                   </FormControl>
@@ -221,7 +238,7 @@ export function EventEditForm({
               name='color'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Color</FormLabel>
+                  <FormLabel>カラー</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild className='cursor-pointer'>
@@ -248,9 +265,9 @@ export function EventEditForm({
             />
             <AlertDialogFooter className='pt-2'>
               <AlertDialogCancel onClick={() => handleEditCancellation()}>
-                Cancel
+                キャンセル
               </AlertDialogCancel>
-              <AlertDialogAction type='submit'>Save</AlertDialogAction>
+              <AlertDialogAction type='submit'>更新</AlertDialogAction>
             </AlertDialogFooter>
           </form>
         </Form>

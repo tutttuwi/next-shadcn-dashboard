@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { signOut, useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 export function UserNav() {
   const { data: session } = useSession();
   if (session) {
@@ -31,10 +32,10 @@ export function UserNav() {
         <DropdownMenuContent className='w-56' align='end' forceMount>
           <DropdownMenuLabel className='font-normal'>
             <div className='flex flex-col space-y-1'>
-              <p className='text-sm font-medium leading-none'>
+              <p className='text-sm leading-none font-medium'>
                 {session.user?.name}
               </p>
-              <p className='text-xs leading-none text-muted-foreground'>
+              <p className='text-muted-foreground text-xs leading-none'>
                 {session.user?.email}
               </p>
             </div>
@@ -56,7 +57,14 @@ export function UserNav() {
             <DropdownMenuItem>New Team</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => signOut()}>
+          <DropdownMenuItem
+            onClick={() =>
+              signOut({
+                callbackUrl: 'signOut'
+                // callbackUrl: 'http://localhost:3000/api/auth/logout'
+              })
+            }
+          >
             Log out
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>

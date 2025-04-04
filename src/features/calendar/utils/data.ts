@@ -4,59 +4,111 @@ import { RefObject } from 'react';
 export type calendarRef = RefObject<FullCalendar | null>;
 
 // setting earliest / latest available time in minutes since Midnight
-export const earliestTime = 540;
-export const latestTime = 1320;
+// export const earliestTime = 540;
+export const earliestTime = 0;
+// export const latestTime = 1320;
+export const latestTime = 1439; // 1440だとうまく表示できない
 
 export const months = [
   {
     value: '1',
-    label: 'January'
+    label: '1月'
   },
   {
     value: '2',
-    label: 'February'
+    label: '2月'
   },
   {
     value: '3',
-    label: 'March'
+    label: '3月'
   },
   {
     value: '4',
-    label: 'April'
+    label: '4月'
   },
   {
     value: '5',
-    label: 'May'
+    label: '5月'
   },
   {
     value: '6',
-    label: 'June'
+    label: '6月'
   },
   {
     value: '7',
-    label: 'July'
+    label: '7月'
   },
   {
     value: '8',
-    label: 'August'
+    label: '8月'
   },
   {
     value: '9',
-    label: 'September'
+    label: '9月'
   },
   {
     value: '10',
-    label: 'October'
+    label: '10月'
   },
   {
     value: '11',
-    label: 'November'
+    label: '11月'
   },
   {
     value: '12',
-    label: 'December'
+    label: '12月'
   }
 ];
+// export const months = [
+//   {
+//     value: '1',
+//     label: 'January'
+//   },
+//   {
+//     value: '2',
+//     label: 'February'
+//   },
+//   {
+//     value: '3',
+//     label: 'March'
+//   },
+//   {
+//     value: '4',
+//     label: 'April'
+//   },
+//   {
+//     value: '5',
+//     label: 'May'
+//   },
+//   {
+//     value: '6',
+//     label: 'June'
+//   },
+//   {
+//     value: '7',
+//     label: 'July'
+//   },
+//   {
+//     value: '8',
+//     label: 'August'
+//   },
+//   {
+//     value: '9',
+//     label: 'September'
+//   },
+//   {
+//     value: '10',
+//     label: 'October'
+//   },
+//   {
+//     value: '11',
+//     label: 'November'
+//   },
+//   {
+//     value: '12',
+//     label: 'December'
+//   }
+// ];
 
 const getRandomDays = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;

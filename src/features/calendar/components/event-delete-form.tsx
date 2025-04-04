@@ -31,9 +31,11 @@ export function EventDeleteForm({ id, title }: EventDeleteFormProps) {
     setEventDeleteOpen(false);
     setEventViewOpen(false);
     toast({
-      title: 'Event deleted!',
+      // title: 'Event deleted!',
+      title: '予定を削除しました！',
       action: (
-        <ToastAction altText={'Dismiss notification.'}>Dismiss</ToastAction>
+        // <ToastAction altText={'Dismiss notification.'}>Dismiss</ToastAction>
+        <ToastAction altText={'クリックして閉じる'}>閉じる</ToastAction>
       )
     });
   }
@@ -42,13 +44,14 @@ export function EventDeleteForm({ id, title }: EventDeleteFormProps) {
     <AlertDialog open={eventDeleteOpen}>
       <AlertDialogTrigger asChild>
         <Button variant='destructive' onClick={() => setEventDeleteOpen(true)}>
-          Delete Event
+          {/* Delete Event */}
+          削除
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className='flex flex-row items-center justify-between'>
-            <h2>Delete {title}</h2>
+            <h3>Delete {title}</h3>
           </AlertDialogTitle>
           Are you sure you want to delete this event?
         </AlertDialogHeader>

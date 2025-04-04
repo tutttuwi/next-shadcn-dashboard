@@ -1,4 +1,7 @@
-/* @tailwind base;
+/* Tailwindv4対応 */
+@reference '../../../app/globals.css';
+
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -75,4 +78,4 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-} */
+}

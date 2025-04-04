@@ -42,10 +42,19 @@ export default function UserAuthForm() {
 
   const onSubmit = async (data: UserFormValue) => {
     startTransition(() => {
-      signIn('credentials', {
+      signIn('keycloak', {
         email: data.email,
         callbackUrl: callbackUrl ?? '/dashboard'
       });
+      // signIn('cognito').catch((e) => {
+      //   console.log('----------------');
+      //   console.log(e);
+      //   console.log('----------------');
+      // });
+      // signIn('credentials', {
+      //   email: data.email,
+      //   callbackUrl: callbackUrl ?? '/dashboard'
+      // });
       toast.success('Signed In Successfully!');
     });
   };

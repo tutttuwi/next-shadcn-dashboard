@@ -2,8 +2,8 @@
 
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useForm, useWatch } from 'react-hook-form';
+import { z, ZodBoolean } from 'zod';
 import { useToast } from '@/features/calendar/hooks/use-toast';
 import { Button } from '@/features/calendar/components/ui/button';
 import {
@@ -32,25 +32,43 @@ import {
 import { DateTimePicker } from './date-picker';
 import { useEvents } from '@/features/calendar/context/events-context';
 import { ToastAction } from './ui/toast';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const eventAddFormSchema = z.object({
   title: z
-    .string({ required_error: 'Please enter a title.' })
-    .min(1, { message: 'Must provide a title for this event.' }),
-  description: z
-    .string({ required_error: 'Please enter a description.' })
-    .min(1, { message: 'Must provide a description for this event.' }),
+    .string({ required_error: 'タイトルを入力してください' })
+    .min(1, { message: 'タイトルは必須です。' }),
+  // title: z
+  // .string({ required_error: 'Please enter a title.' })
+  // .min(1, { message: 'Must provide a title for this event.' }),
+  // 詳細は任意とする
+  description: z.string({ required_error: '詳細説明を入力してください' }),
+  // description: z
+  // .string({ required_error: 'Please enter a description.' })
+  // .min(1, { message: 'Must provide a description for this event.' }),
+  // start: z.date({
+  //   required_error: 'Please select a start time',
+  //   invalid_type_error: "That's not a date!"
+  // }),
+  // end: z.date({
+  //   required_error: 'Please select an end time',
+  //   invalid_type_error: "That's not a date!"
+  // }),
+  // color: z
+  //   .string({ required_error: 'Please select an event color.' })
+  //   .min(1, { message: 'Must provide a title for this event.' })
   start: z.date({
-    required_error: 'Please select a start time',
-    invalid_type_error: "That's not a date!"
+    required_error: '開始日時を選択してください',
+    invalid_type_error: '開始日時が不正です。'
   }),
   end: z.date({
-    required_error: 'Please select an end time',
-    invalid_type_error: "That's not a date!"
+    required_error: '終了日時を選択してください',
+    invalid_type_error: '終了日時が不正です。'
   }),
+  allDay: z.boolean(),
   color: z
-    .string({ required_error: 'Please select an event color.' })
-    .min(1, { message: 'Must provide a title for this event.' })
+    .string({ required_error: 'イベントカラーを選択してください' })
+    .min(1, { message: 'イベントカラーは必須です。' })
 });
 
 type EventAddFormValues = z.infer<typeof eventAddFormSchema>;
@@ -92,14 +110,23 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     addEvent(newEvent);
     setEventAddOpen(false);
     toast({
-      title: 'Event added!',
+      // title: 'Event added!',
+      title: '予定を登録しました！',
       action: (
-        <ToastAction altText={'Click here to dismiss notification'}>
-          Dismiss
+        // <ToastAction altText={'Click here to dismiss notification'}>
+        <ToastAction altText={'クリックして閉じる'}>
+          {/* Dismiss */}
+          閉じる
         </ToastAction>
       )
     });
   }
+
+  const allDayValue = useWatch({
+    control: form.control,
+    name: 'allDay',
+    defaultValue: false // ✅ 初期値を設定
+  });
 
   return (
     <AlertDialog open={eventAddOpen}>
@@ -110,12 +137,14 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
           onClick={() => setEventAddOpen(true)}
         >
           <PlusIcon className='h-3 w-3 md:h-5 md:w-5' />
-          <p>Add Event</p>
+          {/* <p>Add Event</p> */}
+          <p>予定を追加</p>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Add Event</AlertDialogTitle>
+          {/* <AlertDialogTitle>Add Event</AlertDialogTitle> */}
+          <AlertDialogTitle>予定を追加</AlertDialogTitle>
         </AlertDialogHeader>
 
         <Form {...form}>
@@ -125,9 +154,11 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='title'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  {/* <FormLabel>Title</FormLabel> */}
+                  <FormLabel>タイトル</FormLabel>
                   <FormControl>
-                    <Input placeholder='Standup Meeting' {...field} />
+                    {/* <Input placeholder='Standup Meeting' {...field} /> */}
+                    <Input placeholder='タイトルを追加' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,11 +169,14 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  {/* <FormLabel>Description</FormLabel> */}
+                  <FormLabel>詳細説明</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder='Daily session'
-                      className='max-h-36'
+                      // placeholder='Daily session'
+                      placeholder='説明を追加'
+                      // className='max-h-36'
+                      className='h-36 max-h-46'
                       {...field}
                     />
                   </FormControl>
@@ -150,17 +184,22 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                 </FormItem>
               )}
             />
+            {/* ✅ allDay の値が true の場合、FormField の外側に表示 */}
+            {allDayValue && (
+              <p className='mt-2 text-sm text-gray-700'>こんにちは</p>
+            )}
             <FormField
               control={form.control}
               name='start'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel htmlFor='datetime'>Start</FormLabel>
+                  {/* <FormLabel htmlFor='datetime'>Start</FormLabel> */}
+                  <FormLabel htmlFor='datetime'>開始時間</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
                       onChange={field.onChange}
-                      hourCycle={12}
+                      hourCycle={24}
                       granularity='minute'
                     />
                   </FormControl>
@@ -173,14 +212,42 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='end'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel htmlFor='datetime'>End</FormLabel>
+                  {/* <FormLabel htmlFor='datetime'>End</FormLabel> */}
+                  <FormLabel htmlFor='datetime'>終了時間</FormLabel>
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
                       onChange={field.onChange}
-                      hourCycle={12}
+                      hourCycle={24}
                       granularity='minute'
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='allDay'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormControl>
+                    <div className='flex items-center space-x-2'>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) =>
+                          field.onChange(
+                            checked === 'indeterminate' ? false : checked
+                          )
+                        }
+                      />
+                      <label
+                        htmlFor='terms'
+                        className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                      >
+                        終日
+                      </label>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -191,7 +258,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='color'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Color</FormLabel>
+                  <FormLabel>カラー</FormLabel>
                   <FormControl>
                     <Popover>
                       <PopoverTrigger asChild className='cursor-pointer'>
@@ -218,9 +285,11 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
             />
             <AlertDialogFooter className='pt-2'>
               <AlertDialogCancel onClick={() => setEventAddOpen(false)}>
-                Cancel
+                {/* Cancel */}
+                キャンセル
               </AlertDialogCancel>
-              <AlertDialogAction type='submit'>Add Event</AlertDialogAction>
+              {/* <AlertDialogAction type='submit'>Add Event</AlertDialogAction> */}
+              <AlertDialogAction type='submit'>登録</AlertDialogAction>
             </AlertDialogFooter>
           </form>
         </Form>

@@ -232,7 +232,11 @@ export default function AvailabilityChecker() {
                   onClick={() => handleSlotClick(slot)}
                   className='bg-secondary hover:bg-secondary/40 mx-auto my-2 flex w-11/12 cursor-pointer px-4 py-2 shadow-sm transition-all hover:scale-[1.03]'
                 >
-                  {slot.toLocaleString('en-US', {
+                  {/* {slot.toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric'
+                  })} */}
+                  {slot.toLocaleString('ja', {
                     hour: 'numeric',
                     minute: 'numeric'
                   })}

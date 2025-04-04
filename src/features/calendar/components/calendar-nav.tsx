@@ -86,6 +86,70 @@ export default function CalendarNav({
           <ChevronLeft className='h-4 w-4' />
         </Button>
 
+        {/* Year Lookup */}
+
+        <Input
+          className='w-[75px] text-xs font-semibold md:w-[85px] md:text-sm'
+          type='number'
+          value={selectedYear}
+          onChange={(value) => handleYearChange(calendarRef, viewedDate, value)}
+        />
+
+        {/* Month Lookup */}
+
+        <Popover open={monthSelectOpen} onOpenChange={setMonthSelectOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant='outline'
+              role='combobox'
+              className='flex w-[105px] justify-between overflow-hidden p-2 text-xs font-semibold md:w-[120px] md:text-sm'
+            >
+              {selectedMonth
+                ? months.find((month) => month.value === String(selectedMonth))
+                    ?.label
+                : 'Select month...'}
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className='w-[200px] p-0'>
+            <Command>
+              {/* <CommandInput placeholder='Search month...' /> */}
+              <CommandInput placeholder='月を選択' />
+              <CommandList>
+                {/* <CommandEmpty>No month found.</CommandEmpty> */}
+                <CommandEmpty>月が見つかりません</CommandEmpty>
+                <CommandGroup>
+                  {months.map((month) => (
+                    <CommandItem
+                      key={month.value}
+                      value={month.value}
+                      onSelect={(currentValue) => {
+                        handleMonthChange(
+                          calendarRef,
+                          viewedDate,
+                          currentValue
+                        );
+                        //   setValue(currentValue === selectedMonth ? "" : currentValue);
+                        setMonthSelectOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          'mr-2 h-4 w-4',
+                          String(selectedMonth) === month.value
+                            ? 'opacity-100'
+                            : 'opacity-0'
+                        )}
+                      />
+                      {month.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
         {/* Day Lookup */}
 
         {currentView == 'timeGridDay' && (
@@ -99,15 +163,18 @@ export default function CalendarNav({
                 {selectedDay
                   ? dayOptions.find((day) => day.value === String(selectedDay))
                       ?.label
-                  : 'Select day...'}
+                  : // : 'Select day...'
+                    '日を選択'}
                 <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
               </Button>
             </PopoverTrigger>
             <PopoverContent className='w-[200px] p-0'>
               <Command>
-                <CommandInput placeholder='Search day...' />
+                {/* <CommandInput placeholder='Search day...' /> */}
+                <CommandInput placeholder='日を選択' />
                 <CommandList>
-                  <CommandEmpty>No day found.</CommandEmpty>
+                  {/* <CommandEmpty>No day found.</CommandEmpty> */}
+                  <CommandEmpty>日付が見つかりません</CommandEmpty>
                   <CommandGroup>
                     {dayOptions.map((day) => (
                       <CommandItem
@@ -141,68 +208,6 @@ export default function CalendarNav({
           </Popover>
         )}
 
-        {/* Month Lookup */}
-
-        <Popover open={monthSelectOpen} onOpenChange={setMonthSelectOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant='outline'
-              role='combobox'
-              className='flex w-[105px] justify-between overflow-hidden p-2 text-xs font-semibold md:w-[120px] md:text-sm'
-            >
-              {selectedMonth
-                ? months.find((month) => month.value === String(selectedMonth))
-                    ?.label
-                : 'Select month...'}
-              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className='w-[200px] p-0'>
-            <Command>
-              <CommandInput placeholder='Search month...' />
-              <CommandList>
-                <CommandEmpty>No month found.</CommandEmpty>
-                <CommandGroup>
-                  {months.map((month) => (
-                    <CommandItem
-                      key={month.value}
-                      value={month.value}
-                      onSelect={(currentValue) => {
-                        handleMonthChange(
-                          calendarRef,
-                          viewedDate,
-                          currentValue
-                        );
-                        //   setValue(currentValue === selectedMonth ? "" : currentValue);
-                        setMonthSelectOpen(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          'mr-2 h-4 w-4',
-                          String(selectedMonth) === month.value
-                            ? 'opacity-100'
-                            : 'opacity-0'
-                        )}
-                      />
-                      {month.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-
-        {/* Year Lookup */}
-
-        <Input
-          className='w-[75px] text-xs font-semibold md:w-[85px] md:text-sm'
-          type='number'
-          value={selectedYear}
-          onChange={(value) => handleYearChange(calendarRef, viewedDate, value)}
-        />
-
         {/* Navigate to next date interval */}
 
         <Button
@@ -226,13 +231,23 @@ export default function CalendarNav({
             goToday(calendarRef);
           }}
         >
-          {currentView === 'timeGridDay'
-            ? 'Today'
-            : currentView === 'timeGridWeek'
-              ? 'This Week'
-              : currentView === 'dayGridMonth'
-                ? 'This Month'
-                : null}
+          {
+            // for english
+            // currentView === 'timeGridDay'
+            // ? 'Today'
+            // : currentView === 'timeGridWeek'
+            //   ? 'This Week'
+            //   : currentView === 'dayGridMonth'
+            //     ? 'This Month'
+            //     : null
+            currentView === 'timeGridDay'
+              ? '今日'
+              : currentView === 'timeGridWeek'
+                ? '今週'
+                : currentView === 'dayGridMonth'
+                  ? '今月'
+                  : null
+          }
         </Button>
 
         {/* Change view with tabs */}
@@ -250,7 +265,8 @@ export default function CalendarNav({
             >
               <GalleryVertical className='h-5 w-5' />
               {currentView === 'timeGridDay' && (
-                <p className='text-xs md:text-sm'>Day</p>
+                // <p className='text-xs md:text-sm'>Day</p>
+                <p className='text-xs md:text-sm'>日</p>
               )}
             </TabsTrigger>
             <TabsTrigger
@@ -264,7 +280,8 @@ export default function CalendarNav({
             >
               <Tally3 className='h-5 w-5' />
               {currentView === 'timeGridWeek' && (
-                <p className='text-xs md:text-sm'>Week</p>
+                // <p className='text-xs md:text-sm'>Week</p>
+                <p className='text-xs md:text-sm'>週</p>
               )}
             </TabsTrigger>
             <TabsTrigger
@@ -278,7 +295,8 @@ export default function CalendarNav({
             >
               <Table className='h-5 w-5 rotate-90' />
               {currentView === 'dayGridMonth' && (
-                <p className='text-xs md:text-sm'>Month</p>
+                // <p className='text-xs md:text-sm'>Month</p>
+                <p className='text-xs md:text-sm'>月</p>
               )}
             </TabsTrigger>
           </TabsList>

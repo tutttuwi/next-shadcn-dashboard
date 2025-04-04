@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 
+'use client';
+
 import {
   Button,
   buttonVariants
@@ -14,7 +16,7 @@ import {
 } from '@/features/calendar/components/ui/popover';
 import { cn } from '@/features/calendar/lib/utils';
 import { add, format } from 'date-fns';
-import { type Locale, enUS } from 'date-fns/locale';
+import { type Locale, enUS, ja } from 'date-fns/locale';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -262,7 +264,8 @@ function Calendar({
   ...props
 }: CalendarProps & { yearRange?: number }) {
   const MONTHS = React.useMemo(() => {
-    let locale: Pick<Locale, 'options' | 'localize' | 'formatLong'> = enUS;
+    // let locale: Pick<Locale, 'options' | 'localize' | 'formatLong'> = enUS;
+    let locale: Pick<Locale, 'options' | 'localize' | 'formatLong'> = ja;
     const { options, localize, formatLong } = props.locale || {};
     if (options && localize && formatLong) {
       locale = {
@@ -276,9 +279,33 @@ function Calendar({
 
   const YEARS = React.useMemo(() => genYears(yearRange), [yearRange]);
 
+  /**
+   * 日付選択ポップアップの上部に表示する年月表示をカスタマイズ
+   * @param date
+   * @param options
+   * @returns
+   */
+  const formatCaption: DateFormatter = (date, options) => {
+    const y = format(date, 'yyyy');
+    const m = format(date, 'M', { locale: options?.locale });
+    return `${y}年${m}月`;
+  };
+
   return (
+    //   <
+    //   anDayPickerimate
+    //   mode="single"
+    //   selected={new Date()}
+    //   onSelect={new Date()}
+    //   footer={
+    //     new Date ? `Selected: ${new Date().toLocaleDateString()}` : "Pick a day."
+    //   }
+    // />
     <DayPicker
+      locale={ja}
+      formatters={{ formatCaption }}
       showOutsideDays={showOutsideDays}
+      weekStartsOn={1} // 月曜始まり
       className={cn('p-3', className)}
       classNames={{
         months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
@@ -716,7 +743,8 @@ const DateTimePicker = React.forwardRef<
 >(
   (
     {
-      locale = enUS,
+      // locale = enUS,
+      locale = ja,
       value,
       onChange,
       hourCycle = 24,
@@ -768,11 +796,13 @@ const DateTimePicker = React.forwardRef<
         `PP hh:mm${!granularity || granularity === 'second' ? ':ss' : ''} b`
     };
 
-    let loc = enUS;
+    // let loc = enUS;
+    let loc = ja;
     const { options, localize, formatLong } = locale;
     if (options && localize && formatLong) {
       loc = {
-        ...enUS,
+        // ...enUS,
+        ...ja,
         options,
         localize,
         formatLong

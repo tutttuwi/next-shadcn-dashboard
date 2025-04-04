@@ -22,14 +22,14 @@ export default function Page({ searchParams }: pageProps) {
           defaultValue='calendar'
           className='flex w-full flex-col items-center'
         >
-          <TabsList className='mb-2 flex justify-center'>
+          {/* <TabsList className='mb-2 flex justify-center'>
             <TabsTrigger value='calendar'>Calendar</TabsTrigger>
             <TabsTrigger value='schedulingAssistant'>
               Scheduling Assistant
             </TabsTrigger>
-          </TabsList>
+          </TabsList> */}
           <TabsContent value='calendar' className='w-full space-y-5 px-5'>
-            <div className='space-y-0'>
+            {/* <div className='space-y-0'>
               <h2 className='flex items-center text-2xl font-semibold tracking-tight md:text-3xl'>
                 Calendar
               </h2>
@@ -37,7 +37,7 @@ export default function Page({ searchParams }: pageProps) {
                 A flexible calendar component with drag and drop capabilities
                 built using FullCalendar and shadcn/ui.
               </p>
-            </div>
+            </div> */}
 
             <Separator />
             <Calendar />

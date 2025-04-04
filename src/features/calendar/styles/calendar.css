@@ -3,7 +3,9 @@
 
 :root {
   --fc-border-color: lightgray;
-  --fc-page-bg-color: none;
+  /* 予定内の文字色は GoogleCalendar に合わせる */
+  --fc-event-text-color: #131314;
+  /* --fc-page-bg-color: none; */
 }
 .dark {
   --fc-border-color: gray;
@@ -11,7 +13,7 @@
 
 /* Removing borders */
 
-.fc-scrollgrid {
+/* .fc-scrollgrid {
   @apply border-none;
 }
 
@@ -25,27 +27,27 @@
 
 .fc-theme-standard th {
   @apply border-r-0;
-}
+} */
 
 /* Setting header size */
 
-.fc-col-header-cell-cushion {
+/* .fc-col-header-cell-cushion {
   @apply flex h-[56px] items-center;
-}
+} */
 
 /* Setting left time size */
 
-.fc-timegrid-slot {
+/* .fc-timegrid-slot {
   @apply h-[28px];
 }
 
 .fc-timegrid-slot-label-cushion {
   @apply text-xs font-light;
-}
+} */
 
 /* Setting cell colors */
 
-td.fc-daygrid-day.fc-day {
+/* td.fc-daygrid-day.fc-day {
   @apply hover:bg-secondary;
 }
 
@@ -109,4 +111,19 @@ td.fc-daygrid-day.fc-day {
 
 .fc-daygrid-day-top {
   pointer-events: none;
+} */
+
+/* +N more 表示 のバックグラウンド設定のため追加 */
+.fc-more-popover {
+  @apply border border-gray-200 bg-white text-black dark:border-gray-600 dark:bg-gray-800 dark:text-white;
+}
+
+/* +N more 表示 の上部に表示される領域 不要なため非表示にする */
+.fc-more-popover-misc {
+  @apply hidden;
+}
+
+/* カレンダー領域のボディー部分 カレンダー領域を横幅いっぱいまで動的に広げるため */
+.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard {
+  width: 100%;
 }
