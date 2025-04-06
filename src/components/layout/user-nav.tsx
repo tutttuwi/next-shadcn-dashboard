@@ -60,7 +60,7 @@ export function UserNav() {
           <DropdownMenuItem
             onClick={() =>
               signOut({
-                callbackUrl: 'signOut'
+                // callbackUrl: 'signOut'
                 // callbackUrl: 'http://localhost:3000/api/auth/logout'
               })
             }
