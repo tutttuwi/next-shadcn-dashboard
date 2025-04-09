@@ -41,8 +41,8 @@ export default function UserAuthForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
-    startTransition(() => {
-      signIn('keycloak', {
+    startTransition(async () => {
+      await signIn('keycloak', {
         email: data.email,
         callbackUrl: callbackUrl ?? '/dashboard'
       });
@@ -55,7 +55,7 @@ export default function UserAuthForm() {
       //   email: data.email,
       //   callbackUrl: callbackUrl ?? '/dashboard'
       // });
-      toast.success('Signed In Successfully!');
+      // toast.success('Signed In Successfully!');
     });
   };
 
@@ -66,7 +66,7 @@ export default function UserAuthForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className='w-full space-y-2'
         >
-          <FormField
+          {/* <FormField
             control={form.control}
             name='email'
             render={({ field }) => (
@@ -83,14 +83,17 @@ export default function UserAuthForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
-          <Button disabled={loading} className='ml-auto w-full' type='submit'>
+          {/* <Button disabled={loading} className='ml-auto w-full' type='submit'>
             Continue With Email
+          </Button> */}
+          <Button disabled={loading} className='ml-auto w-full' type='submit'>
+            ログイン
           </Button>
         </form>
       </Form>
-      <div className='relative'>
+      {/* <div className='relative'>
         <div className='absolute inset-0 flex items-center'>
           <span className='w-full border-t' />
         </div>
@@ -99,8 +102,8 @@ export default function UserAuthForm() {
             Or continue with
           </span>
         </div>
-      </div>
-      <GithubSignInButton />
+      </div> */}
+      {/* <GithubSignInButton /> */}
     </>
   );
 }
