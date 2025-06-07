@@ -102,10 +102,12 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   }, [form, start, end]);
 
   async function onSubmit(data: EventAddFormValues) {
+    console.log('EventAddForm onSubmit', data);
     const newEvent = {
       id: String(events.length + 1),
       title: data.title,
       description: data.description,
+      allDay: data.allDay,
       start: data.start,
       end: data.end,
       color: data.color
