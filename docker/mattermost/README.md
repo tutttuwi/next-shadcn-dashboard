@@ -12,3 +12,7 @@ Refer to the [Mattermost Docker deployment guide](https://docs.mattermost.com/in
 ## 初期設定
 
 - <https://zenn.dev/link/comments/0f4bc639c0555e>
+
+## 初期参加チーム
+
+- adminで作成したデフォルトの組織を誰でも参加可能な状態にしておく

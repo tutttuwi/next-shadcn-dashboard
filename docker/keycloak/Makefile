@@ -12,7 +12,16 @@ build:
 	rm -f ./docker/keycloak/providers/*.jar
 	cp -a ./target/keycloak-template-1.0-SNAPSHOT.jar ./docker/keycloak/providers/keycloak-template-1.0-SNAPSHOT.jar
 	docker-compose -f docker/keycloak/docker-compose.yml down
-	docker-compose -f docker/keycloak/docker-compose.yml -p keycloak up -d --build
+	docker-compose -f docker/keycloak/docker-compose.yml -p keycloak up -d
+
+up:
+	docker-compose -f docker/keycloak/docker-compose.yml -p keycloak up -d
+
+down:
+	docker-compose -f docker/keycloak/docker-compose.yml down
+
+down_vro:
+	docker-compose -f docker/keycloak/docker-compose.yml down --volumes --remove-orphans
 
 log:
 	docker logs keycloak_app

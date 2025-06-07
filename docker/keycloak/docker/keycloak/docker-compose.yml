@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 volumes:
   postgres_data:
     driver: local
@@ -6,7 +6,7 @@ volumes:
 services:
   postgres:
     image: library/postgres:15
-    container_name: "keycloak_postgres"
+    container_name: 'keycloak_postgres'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -18,9 +18,9 @@ services:
 
   keycloak:
     image: bitnami/keycloak:22.0.5
-    container_name: "keycloak_app"
+    container_name: 'keycloak_app'
     environment:
-      JAVA_OPTS: "-Xmx512m -Xms256m"
+      JAVA_OPTS: '-Xmx512m -Xms256m'
       KEYCLOAK_DATABASE_VENDER: POSTGRES
       KEYCLOAK_DATABASE_HOST: postgres
       KEYCLOAK_DATABASE_PORT: 5432
@@ -32,11 +32,11 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KEYCLOAK_LOG_LEVEL: INFO
       KEYCLOAK_HTTP_PORT: 8090
-      ROXY_ADDRESS_FORWARDING: "true"
-      #      KEYCLOAK_EXTRA_ARGS: "--import-realm"
+      ROXY_ADDRESS_FORWARDING: 'true'
+      KEYCLOAK_EXTRA_ARGS: '--import-realm'
       TZ: Asia/Tokyo
     volumes:
-      #      - ./keycloak-realm-export.json:/opt/bitnami/keycloak/data/import/realm-export.json
+      - ./keycloak-realm-export.json:/opt/bitnami/keycloak/data/import/realm-export.json
       #      - ./providers/keycloak-template-1.0-SNAPSHOT.jar:/opt/bitnami/keycloak/providers/keycloak-template-1.0-SNAPSHOT.jar
       - ./themes/custom-theme:/opt/bitnami/keycloak/themes/custom-theme
     #      - ./conf/keycloak.conf:/opt/bitnami/keycloak/conf/keycloak.conf
@@ -45,6 +45,7 @@ services:
     depends_on:
       - postgres
       - maildev
+    restart: always
     networks:
       - share-net
   maildev:

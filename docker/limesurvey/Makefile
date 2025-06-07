@@ -12,3 +12,16 @@ fpm-lts:
 	$(RUNTIME) build --pull -t docker.io/martialblog/limesurvey:5-fpm 5.0/fpm
 fpm-latest:
 	$(RUNTIME) build --pull -t docker.io/martialblog/limesurvey:6-fpm 6.0/fpm
+
+up:
+	docker-compose -f docker-compose.yml up -d
+
+down:
+	docker-compose -f docker-compose.yml down
+
+log:
+	docker-compose logs limesurvey_app
+
+log_watch:
+	docker-compose logs limesurvey_app -f
+
