@@ -728,6 +728,10 @@ type DateTimePickerProps = {
    **/
   granularity?: Granularity;
   className?: string;
+  /**
+   * 時間入力を非表示にする場合はtrue
+   */
+  // hideTime?: boolean; // 追加
 } & Pick<
   CalendarProps,
   'locale' | 'weekStartsOn' | 'showWeekNumber' | 'showOutsideDays'
@@ -752,8 +756,9 @@ const DateTimePicker = React.forwardRef<
       disabled = false,
       displayFormat,
       granularity = 'second',
-      placeholder = 'Pick a date',
+      placeholder = '日付を選択',
       className,
+      // hideTime = false, // 追加
       ...props
     },
     ref

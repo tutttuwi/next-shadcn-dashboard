@@ -65,7 +65,7 @@ const eventAddFormSchema = z.object({
     required_error: '終了日時を選択してください',
     invalid_type_error: '終了日時が不正です。'
   }),
-  allDay: z.boolean(),
+  allDay: z.boolean().optional(),
   color: z
     .string({ required_error: 'イベントカラーを選択してください' })
     .min(1, { message: 'イベントカラーは必須です。' })
@@ -88,6 +88,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     resolver: zodResolver(eventAddFormSchema)
   });
 
+  /**
+   * フォームのデフォルト値設定
+   */
   useEffect(() => {
     form.reset({
       title: '',
@@ -143,8 +146,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
+          {/* スペース削減のためタイトル削除 */}
           {/* <AlertDialogTitle>Add Event</AlertDialogTitle> */}
-          <AlertDialogTitle>予定を追加</AlertDialogTitle>
+          {/* <AlertDialogTitle>予定を追加</AlertDialogTitle> */}
         </AlertDialogHeader>
 
         <Form {...form}>
@@ -154,8 +158,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='title'
               render={({ field }) => (
                 <FormItem>
+                  {/* スペース削減のためラベルは削除 */}
                   {/* <FormLabel>Title</FormLabel> */}
-                  <FormLabel>タイトル</FormLabel>
+                  {/* <FormLabel>タイトル</FormLabel> */}
                   <FormControl>
                     {/* <Input placeholder='Standup Meeting' {...field} /> */}
                     <Input placeholder='タイトルを追加' {...field} />
@@ -169,8 +174,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               name='description'
               render={({ field }) => (
                 <FormItem>
+                  {/* スペース削減のためラベルは削除 */}
                   {/* <FormLabel>Description</FormLabel> */}
-                  <FormLabel>詳細説明</FormLabel>
+                  {/* <FormLabel>詳細説明</FormLabel> */}
                   <FormControl>
                     <Textarea
                       // placeholder='Daily session'
@@ -184,75 +190,90 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                 </FormItem>
               )}
             />
-            {/* ✅ allDay の値が true の場合、FormField の外側に表示 */}
-            {allDayValue && (
-              <p className='mt-2 text-sm text-gray-700'>こんにちは</p>
-            )}
-            <FormField
-              control={form.control}
-              name='start'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  {/* <FormLabel htmlFor='datetime'>Start</FormLabel> */}
-                  <FormLabel htmlFor='datetime'>開始時間</FormLabel>
-                  <FormControl>
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      hourCycle={24}
-                      granularity='minute'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='end'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  {/* <FormLabel htmlFor='datetime'>End</FormLabel> */}
-                  <FormLabel htmlFor='datetime'>終了時間</FormLabel>
-                  <FormControl>
-                    <DateTimePicker
-                      value={field.value}
-                      onChange={field.onChange}
-                      hourCycle={24}
-                      granularity='minute'
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='allDay'
-              render={({ field }) => (
-                <FormItem className='flex flex-col'>
-                  <FormControl>
-                    <div className='flex items-center space-x-2'>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) =>
-                          field.onChange(
-                            checked === 'indeterminate' ? false : checked
-                          )
-                        }
+            <div className='flex items-center gap-2'>
+              <FormField
+                control={form.control}
+                name='start'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormControl>
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        hourCycle={24}
+                        granularity={allDayValue ? 'day' : 'minute'}
                       />
-                      <label
-                        htmlFor='terms'
-                        className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                      >
-                        終日
-                      </label>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className='flex h-full items-center'>〜</div>
+              <FormField
+                control={form.control}
+                name='end'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormControl>
+                      <DateTimePicker
+                        value={field.value}
+                        onChange={field.onChange}
+                        hourCycle={24}
+                        granularity={allDayValue ? 'day' : 'minute'}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='allDay'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormControl>
+                      <div className='flex items-center space-x-2'>
+                        <Checkbox
+                          id='allDay'
+                          checked={field.value}
+                          onCheckedChange={(checked) => {
+                            const isAllDay =
+                              checked === 'indeterminate' ? false : checked;
+                            field.onChange(isAllDay);
+
+                            if (isAllDay) {
+                              // 開始日の時間を00:00、終了日の時間を翌日の00:00に設定
+                              const startDate = form.getValues('start');
+                              if (startDate) {
+                                const newStart = new Date(startDate);
+                                newStart.setHours(0, 0, 0, 0);
+                                form.setValue('start', newStart);
+
+                                const newEnd = new Date(newStart);
+                                newEnd.setDate(newEnd.getDate() + 1);
+                                newEnd.setHours(0, 0, 0, 0);
+                                form.setValue('end', newEnd);
+                              }
+                            } else {
+                              // propsで渡された値にリセット
+                              form.setValue('start', start);
+                              form.setValue('end', end);
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor='allDay'
+                          className='cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                        >
+                          終日
+                        </label>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name='color'

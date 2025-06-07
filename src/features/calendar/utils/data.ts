@@ -120,6 +120,7 @@ export interface CalendarEvent {
   title: string;
   start: Date;
   end: Date;
+  allDay?: boolean;
   backgroundColor?: string;
   description: string;
 }
@@ -249,6 +250,7 @@ export const initialEvents: CalendarEvent[] = [
   {
     id: '7',
     title: '読書会ディスカッション',
+    allDay: true,
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
