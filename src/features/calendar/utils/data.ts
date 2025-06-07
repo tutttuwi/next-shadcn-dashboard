@@ -127,7 +127,7 @@ export interface CalendarEvent {
 export const initialEvents: CalendarEvent[] = [
   {
     id: '1',
-    title: 'Daily Standup Meeting',
+    title: 'デイリースタンドアップミーティング',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -143,11 +143,11 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#AEC6E4',
-    description: "This is a daily meeting to go over today's tasks."
+    description: '本日のタスクを確認するための定例ミーティングです。'
   },
   {
     id: '2',
-    title: 'Client Lunch',
+    title: 'クライアントとのランチ',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -163,11 +163,11 @@ export const initialEvents: CalendarEvent[] = [
       30
     ),
     backgroundColor: '#FFD1DC',
-    description: 'Lunch at Cracker Barrel with integration clients.'
+    description: 'Cracker Barrel にて、統合クライアントとのランチです。'
   },
   {
     id: '3',
-    title: 'Counselor Meetup',
+    title: 'カウンセラーとの面談',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -183,11 +183,11 @@ export const initialEvents: CalendarEvent[] = [
       45
     ),
     backgroundColor: '#B2E0B2',
-    description: 'Conversation with counselor about progression.'
+    description: '進捗に関してカウンセラーと話し合います。'
   },
   {
     id: '4',
-    title: 'Team Retreat',
+    title: 'チームリトリート',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -203,11 +203,11 @@ export const initialEvents: CalendarEvent[] = [
       45
     ),
     backgroundColor: '#FFB3BA',
-    description: 'Team bonding and strategic planning.'
+    description: 'チームの絆を深め、戦略を計画するためのイベントです。'
   },
   {
     id: '5',
-    title: 'Time Management Workshop',
+    title: 'タイムマネジメント研修',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -223,12 +223,11 @@ export const initialEvents: CalendarEvent[] = [
       30
     ),
     backgroundColor: '#FFDFBA',
-    description:
-      'Improve your productivity with effective time management techniques.'
+    description: '効果的な時間管理のテクニックで生産性を向上させましょう。'
   },
   {
     id: '6',
-    title: 'Health and Wellness Fair',
+    title: '健康とウェルネスフェア',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -244,11 +243,12 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#B9FBC0',
-    description: 'Explore health resources and wellness activities.'
+    description:
+      '健康に関するリソースやウェルネスアクティビティを体験できます。'
   },
   {
     id: '7',
-    title: 'Book Club Discussion',
+    title: '読書会ディスカッション',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -264,11 +264,11 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#C3B1E1',
-    description: "Discussing this month's book selection with the club."
+    description: '今月の選書について読書会メンバーと語り合います。'
   },
   {
     id: '8',
-    title: 'Creative Writing Workshop',
+    title: 'クリエイティブライティングワークショップ',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -284,11 +284,11 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#B2E7E0',
-    description: 'Join us for a weekend of creative writing exercises.'
+    description: '週末に開催される創作ライティングの演習に参加しましょう。'
   },
   {
     id: '9',
-    title: 'Charity Fundraiser',
+    title: 'チャリティーファンドレイザー',
     start: new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -304,6 +304,6 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#F6C9D8',
-    description: 'An evening of fun to raise funds for a good cause.'
+    description: '良い目的のために資金を集める楽しい夜のイベントです。'
   }
 ];
