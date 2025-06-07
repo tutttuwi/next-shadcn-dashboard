@@ -1,0 +1,43 @@
+services:
+  limesurvey:
+    build:
+      context: 6.0/apache/
+      dockerfile: Dockerfile
+    volumes:
+      # 永続化したい LimeSurvey データ
+      - ./surveys:/var/www/html/upload/surveys
+      - ./plugins:/var/www/html/plugins
+    networks:
+      # - limesurvey-db
+      - share-net
+    ports:
+      - "8080:8080"
+    environment:
+      - "DB_HOST=lime-db"
+      - "DB_PASSWORD=admin"
+      - "ADMIN_PASSWORD=admin"
+      # - "DB_TABLE_PREFIX= "  # 必要に応じて空のプレフィックス指定
+
+  lime-db:
+    image: mariadb:11.4
+    networks:
+      # - limesurvey-db
+      - share-net
+    environment:
+      - "MYSQL_USER=limesurvey"
+      - "MYSQL_DATABASE=limesurvey"
+      - "MYSQL_PASSWORD=admin"
+      - "MYSQL_ROOT_PASSWORD=admin"
+    volumes:
+      - lime-db-data:/var/lib/mysql # MariaDB のデータ永続化
+
+volumes:
+  lime-db-data: # MariaDB 用の永続ボリューム
+
+# networks:
+#   limesurvey-db:
+#     driver: bridge
+networks:
+  share-net:
+    external: true
+    driver: bridge
