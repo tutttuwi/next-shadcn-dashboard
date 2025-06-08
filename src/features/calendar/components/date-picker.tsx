@@ -830,9 +830,11 @@ const DateTimePicker = React.forwardRef<
             {value ? (
               format(
                 value,
-                hourCycle === 24
-                  ? initHourFormat.hour24
-                  : initHourFormat.hour12,
+                granularity === 'day'
+                  ? 'PPP' // granularityが'day'なら日付のみ
+                  : hourCycle === 24
+                    ? initHourFormat.hour24
+                    : initHourFormat.hour12,
                 {
                   locale: loc
                 }

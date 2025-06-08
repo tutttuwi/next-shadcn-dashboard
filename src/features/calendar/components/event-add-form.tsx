@@ -18,7 +18,13 @@ import { Input } from '@/features/calendar/components/ui/input';
 import { Textarea } from './ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { PlusIcon } from 'lucide-react';
-import { HexColorPicker } from 'react-colorful';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from './ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -133,6 +139,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     defaultValue: false // ✅ 初期値を設定
   });
 
+  // 色の配列を定義
+  const colorOptions = ['#76c7ef', '#f87171', '#34d399', '#fbbf24', '#a78bfa'];
+
   return (
     <AlertDialog open={eventAddOpen}>
       <AlertDialogTrigger className='flex' asChild>
@@ -166,27 +175,6 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                   <FormControl>
                     {/* <Input placeholder='Standup Meeting' {...field} /> */}
                     <Input placeholder='タイトルを追加' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='description'
-              render={({ field }) => (
-                <FormItem>
-                  {/* スペース削減のためラベルは削除 */}
-                  {/* <FormLabel>Description</FormLabel> */}
-                  {/* <FormLabel>詳細説明</FormLabel> */}
-                  <FormControl>
-                    <Textarea
-                      // placeholder='Daily session'
-                      placeholder='説明を追加'
-                      // className='max-h-36'
-                      className='h-36 max-h-46'
-                      {...field}
-                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -228,6 +216,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                   </FormItem>
                 )}
               />
+            </div>
+            <div className='flex items-center gap-2'>
               <FormField
                 control={form.control}
                 name='allDay'
@@ -275,37 +265,67 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name='color'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className='w-full'>
+                          <SelectValue>
+                            <div className='flex items-center'>
+                              <span
+                                className='mb-0 inline-block h-4 w-4 rounded-full'
+                                style={{ backgroundColor: field.value }}
+                              />
+                            </div>
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {colorOptions.map((color) => (
+                            <SelectItem key={color} value={color}>
+                              <div className='flex items-center'>
+                                <span
+                                  className='inline-block h-4 w-4 rounded-full'
+                                  style={{ backgroundColor: color }}
+                                />
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
             <FormField
               control={form.control}
-              name='color'
+              name='description'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>カラー</FormLabel>
+                  {/* スペース削減のためラベルは削除 */}
+                  {/* <FormLabel>Description</FormLabel> */}
+                  {/* <FormLabel>詳細説明</FormLabel> */}
                   <FormControl>
-                    <Popover>
-                      <PopoverTrigger asChild className='cursor-pointer'>
-                        <div className='flex w-full flex-row items-center space-x-2 pl-2'>
-                          <div
-                            className={`h-5 w-5 cursor-pointer rounded-full`}
-                            style={{ backgroundColor: field.value }}
-                          ></div>
-                          <Input {...field} />
-                        </div>
-                      </PopoverTrigger>
-                      <PopoverContent className='mx-auto flex items-center justify-center'>
-                        <HexColorPicker
-                          className='flex'
-                          color={field.value}
-                          onChange={field.onChange}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <Textarea
+                      // placeholder='Daily session'
+                      placeholder='説明を追加'
+                      // className='max-h-36'
+                      className='h-36 max-h-46'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <AlertDialogFooter className='pt-2'>
               <AlertDialogCancel onClick={() => setEventAddOpen(false)}>
                 {/* Cancel */}
