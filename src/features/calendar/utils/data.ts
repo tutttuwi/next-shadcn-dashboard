@@ -123,6 +123,8 @@ export interface CalendarEvent {
   allDay?: boolean;
   backgroundColor?: string;
   description: string;
+  color?: string;
+  extendedProps?: Record<string, any>;
 }
 
 export const initialEvents: CalendarEvent[] = [
