@@ -41,6 +41,7 @@ import { ToastAction } from './ui/toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch'; // shadcn/uiのSwitchを想定
 import { CalendarEvent } from '../utils/data';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const eventAddFormSchema = z.object({
   title: z
@@ -197,6 +198,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     typeof memberCandidates
   >([]);
   const [showGuestList, setShowGuestList] = useState(true);
+  const [eventType, setEventType] = useState<'event' | 'training'>('event');
+  const [assignmentFiles, setAssignmentFiles] = useState<File[]>([]);
 
   // 候補のフィルタリングもオブジェクトで
   const filteredCandidates = memberCandidates.filter(
@@ -272,6 +275,24 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   // 色の配列を定義
   const colorOptions = ['#76c7ef', '#f87171', '#34d399', '#fbbf24', '#a78bfa'];
 
+  // ファイル追加時、既存ファイルと重複しないものだけ追加
+  const handleAssignmentFilesChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files ?? []);
+    setAssignmentFiles((prev) => {
+      // すでに同名ファイルがある場合は追加しない
+      const existingNames = prev.map((f) => f.name);
+      const newFiles = files.filter((f) => !existingNames.includes(f.name));
+      return [...prev, ...newFiles];
+    });
+  };
+
+  // ファイル削除
+  const handleRemoveAssignmentFile = (name: string) => {
+    setAssignmentFiles((prev) => prev.filter((f) => f.name !== name));
+  };
+
   return (
     <AlertDialog open={eventAddOpen}>
       <AlertDialogTrigger className='flex' asChild>
@@ -288,12 +309,40 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       <AlertDialogContent>
         <AlertDialogHeader>
           {/* スペース削減のためタイトル削除 */}
-          {/* <AlertDialogTitle>Add Event</AlertDialogTitle> */}
-          {/* <AlertDialogTitle>予定を追加</AlertDialogTitle> */}
         </AlertDialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
+            {/* イベント種類ラジオ：1行で表示 */}
+            <div className='mb-2 flex flex-row gap-6'>
+              <RadioGroup
+                value={eventType}
+                onValueChange={(val) =>
+                  setEventType(val as 'event' | 'training')
+                }
+                className='flex flex-row gap-6'
+              >
+                <div className='flex items-center space-x-2'>
+                  <RadioGroupItem value='event' id='event-type-event' />
+                  <label
+                    htmlFor='event-type-event'
+                    className='cursor-pointer text-sm'
+                  >
+                    予定
+                  </label>
+                </div>
+                <div className='flex items-center space-x-2'>
+                  <RadioGroupItem value='training' id='event-type-training' />
+                  <label
+                    htmlFor='event-type-training'
+                    className='cursor-pointer text-sm'
+                  >
+                    研修
+                  </label>
+                </div>
+              </RadioGroup>
+            </div>
+            {/* 2カラム：タイトル以下の列とゲスト追加の列 */}
             <div className='flex flex-col gap-4 md:flex-row'>
               <div className='flex-1 space-y-2.5'>
                 {/* タイトル */}
@@ -433,6 +482,56 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                     )}
                   />
                 </div>
+                {/* 研修の場合のみファイルアップロード */}
+                {eventType === 'training' && (
+                  <FormItem>
+                    <div className='mb-1 flex items-center gap-2'>
+                      <FormLabel className='mb-0 block text-sm font-medium'>
+                        事前課題ファイル
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type='file'
+                          multiple
+                          onChange={handleAssignmentFilesChange}
+                          className='block w-auto py-2 text-sm'
+                          title='事前課題ファイルを選択'
+                          style={{}}
+                        />
+                      </FormControl>
+                    </div>
+                    {assignmentFiles.length > 0 && (
+                      <div className='mt-1 flex flex-wrap gap-2 text-xs text-gray-600'>
+                        {assignmentFiles.map((file, idx) => (
+                          <div
+                            key={file.name + idx}
+                            className='flex items-center gap-2 rounded bg-gray-100 px-2 py-1'
+                          >
+                            <a
+                              href={URL.createObjectURL(file)}
+                              download={file.name}
+                              className='cursor-pointer underline hover:text-blue-700'
+                              target='_blank'
+                              rel='noopener noreferrer'
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type='button'
+                              className='text-gray-400 hover:text-red-500'
+                              onClick={() =>
+                                handleRemoveAssignmentFile(file.name)
+                              }
+                              aria-label='ファイルを削除'
+                            >
+                              <X className='h-4 w-4' />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </FormItem>
+                )}
                 {/* 詳細 */}
                 <FormField
                   control={form.control}
@@ -520,9 +619,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                                     <span className='text-xs'>
                                       {member.name}
                                     </span>
-                                    {/* <span className='text-xs text-gray-600'>
+                                    <span className='text-xs text-gray-600'>
                                       {member.email}
-                                    </span> */}
+                                    </span>
                                     <span className='text-xs'>
                                       {member.position} / {member.rank}
                                     </span>
@@ -554,10 +653,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
             </div>
             <AlertDialogFooter className='pt-2'>
               <AlertDialogCancel onClick={() => setEventAddOpen(false)}>
-                {/* Cancel */}
                 キャンセル
               </AlertDialogCancel>
-              {/* <AlertDialogAction type='submit'>Add Event</AlertDialogAction> */}
               <AlertDialogAction type='submit'>登録</AlertDialogAction>
             </AlertDialogFooter>
           </form>
