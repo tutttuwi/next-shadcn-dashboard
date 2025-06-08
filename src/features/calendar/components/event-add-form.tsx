@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import { z, ZodBoolean } from 'zod';
@@ -72,6 +72,7 @@ const eventAddFormSchema = z.object({
     invalid_type_error: '終了日時が不正です。'
   }),
   allDay: z.boolean().optional(),
+  members: z.string().array().optional(),
   color: z
     .string({ required_error: 'イベントカラーを選択してください' })
     .min(1, { message: 'イベントカラーは必須です。' })
@@ -84,6 +85,100 @@ interface EventAddFormProps {
   end: Date;
 }
 
+// ダミーメンバー（日本人の名前・役職・階級で15人）
+const memberCandidates = [
+  {
+    email: 'sato@example.com',
+    name: '佐藤 太郎',
+    position: 'エンジニア',
+    rank: '主任'
+  },
+  {
+    email: 'suzuki@example.com',
+    name: '鈴木 花子',
+    position: 'デザイナー',
+    rank: '一般'
+  },
+  {
+    email: 'takahashi@example.com',
+    name: '高橋 健',
+    position: 'マネージャー',
+    rank: '課長'
+  },
+  {
+    email: 'tanaka@example.com',
+    name: '田中 美咲',
+    position: 'エンジニア',
+    rank: '一般'
+  },
+  {
+    email: 'watanabe@example.com',
+    name: '渡辺 一郎',
+    position: 'マーケター',
+    rank: '主任'
+  },
+  {
+    email: 'ito@example.com',
+    name: '伊藤 由紀',
+    position: 'エンジニア',
+    rank: '部長'
+  },
+  {
+    email: 'yamamoto@example.com',
+    name: '山本 大輔',
+    position: 'デザイナー',
+    rank: '主任'
+  },
+  {
+    email: 'nakamura@example.com',
+    name: '中村 さくら',
+    position: 'エンジニア',
+    rank: '一般'
+  },
+  {
+    email: 'kobayashi@example.com',
+    name: '小林 直樹',
+    position: 'マネージャー',
+    rank: '課長'
+  },
+  {
+    email: 'kato@example.com',
+    name: '加藤 未来',
+    position: 'マーケター',
+    rank: '一般'
+  },
+  {
+    email: 'yoshida@example.com',
+    name: '吉田 拓海',
+    position: 'エンジニア',
+    rank: '主任'
+  },
+  {
+    email: 'yamada@example.com',
+    name: '山田 彩',
+    position: 'デザイナー',
+    rank: '一般'
+  },
+  {
+    email: 'sasaki@example.com',
+    name: '佐々木 亮',
+    position: 'マネージャー',
+    rank: '部長'
+  },
+  {
+    email: 'yamaguchi@example.com',
+    name: '山口 直子',
+    position: 'エンジニア',
+    rank: '課長'
+  },
+  {
+    email: 'matsumoto@example.com',
+    name: '松本 剛',
+    position: 'マーケター',
+    rank: '主任'
+  }
+];
+
 export function EventAddForm({ start, end }: EventAddFormProps) {
   const { events, addEvent } = useEvents();
   const { eventAddOpen, setEventAddOpen } = useEvents();
@@ -93,6 +188,22 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   const form = useForm<z.infer<typeof eventAddFormSchema>>({
     resolver: zodResolver(eventAddFormSchema)
   });
+
+  // メンバー選択状態をメールアドレス配列からオブジェクト配列に変更
+  const [memberInput, setMemberInput] = useState('');
+  const [selectedMembers, setSelectedMembers] = useState<
+    typeof memberCandidates
+  >([]);
+
+  // 候補のフィルタリングもオブジェクトで
+  const filteredCandidates = memberCandidates.filter(
+    (member) =>
+      (member.email.includes(memberInput) ||
+        member.name.includes(memberInput) ||
+        member.position.includes(memberInput) ||
+        member.rank.includes(memberInput)) &&
+      !selectedMembers.some((m) => m.email === member.email)
+  );
 
   /**
    * フォームのデフォルト値設定
@@ -138,6 +249,12 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     name: 'allDay',
     defaultValue: false // ✅ 初期値を設定
   });
+
+  // メンバー追加時はオブジェクトを追加
+  const handleAddMember = (member: (typeof memberCandidates)[number]) => {
+    setSelectedMembers((prev) => [...prev, member]);
+    setMemberInput('');
+  };
 
   // 色の配列を定義
   const colorOptions = ['#76c7ef', '#f87171', '#34d399', '#fbbf24', '#a78bfa'];
@@ -304,6 +421,85 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name='members'
+              render={() => (
+                <FormItem>
+                  {/* <FormLabel>招待メンバー</FormLabel> */}
+                  <FormControl>
+                    <div>
+                      <div className='relative'>
+                        <Input
+                          type='text'
+                          placeholder='ゲストを追加 (名前・メール・役職・階級で検索可)'
+                          value={memberInput}
+                          onChange={(e) => setMemberInput(e.target.value)}
+                          autoComplete='off'
+                        />
+                        {memberInput && filteredCandidates.length > 0 && (
+                          <ul className='absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded border bg-white shadow'>
+                            {filteredCandidates.map((member) => (
+                              <li
+                                key={member.email}
+                                className='cursor-pointer px-2 py-2 hover:bg-gray-100'
+                                onClick={() => handleAddMember(member)}
+                              >
+                                <div className='flex flex-col'>
+                                  <span className='font-semibold'>
+                                    {member.name}
+                                  </span>
+                                  <span className='text-xs text-gray-600'>
+                                    {member.email}
+                                  </span>
+                                  <span className='text-xs'>
+                                    {member.position} / {member.rank}
+                                  </span>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                      {/* 選択済みメンバーの表示 */}
+                      <div className='mt-2 flex w-full flex-col gap-2'>
+                        {selectedMembers.map((member) => (
+                          <div
+                            key={member.email}
+                            className='flex w-full items-center justify-between rounded bg-blue-50 px-3 py-2'
+                          >
+                            <div className='flex w-full flex-col'>
+                              <span className='text-base font-semibold'>
+                                {member.name}
+                              </span>
+                              <span className='text-xs text-gray-600'>
+                                {member.email}
+                              </span>
+                              <span className='text-xs'>
+                                {member.position} / {member.rank}
+                              </span>
+                            </div>
+                            <button
+                              type='button'
+                              className='ml-2 text-lg text-blue-500 hover:text-blue-700'
+                              onClick={() =>
+                                setSelectedMembers((prev) =>
+                                  prev.filter((m) => m.email !== member.email)
+                                )
+                              }
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name='description'
