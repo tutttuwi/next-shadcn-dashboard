@@ -520,9 +520,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                                     <span className='text-xs'>
                                       {member.name}
                                     </span>
-                                    <span className='text-xs text-gray-600'>
+                                    {/* <span className='text-xs text-gray-600'>
                                       {member.email}
-                                    </span>
+                                    </span> */}
                                     <span className='text-xs'>
                                       {member.position} / {member.rank}
                                     </span>
