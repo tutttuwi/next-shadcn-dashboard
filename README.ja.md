@@ -99,6 +99,7 @@ git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git
 - 以下のコマンドで `.env.local` ファイルを作成
   `cp env.example.txt .env.local`
 - `.env.local` ファイルに必須パラメータを指定
+- `pnpx auth secret` を実行しSecretを自動生成
 - `pnpm run dev`
 
 ローカル環境へアクセス http://localhost:3000.
@@ -122,17 +123,17 @@ git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git
   - ダミーメンバを検索して表示できるようにする- Escキーでカレンダーを閉じる
 - [ ] カレンダー検索ボックスを追加する
 - [ ] 何もない領域でドラッグドロップしたときに自動的にカレンダー作成画面を開く
-- [ ] タイトルが長文になった際のレイアウト不正を修正
-- [ ] カレンダー領域のデザイン修正
+- [x] タイトルが長文になった際のレイアウト不正を修正
+- [x] カレンダー領域のデザイン修正
   - 位置を中央配置にする
   - ３０分枠のカレンダーを設定しても枠内に文字が収まるようにする（文字サイズ調整、タイトルと時間のみの表示にするなど）
-- [ ] カレンダー重なり修正
+- [x] カレンダー重なり修正
   - 同じ色で重なっても見やすいように枠線をつける
 
 ## チャット機能
 
-- [ ] MostMatterと連携させる
-  - [ ] KeyCloak認証で連携し同一ユーザで利用できるようにする
+- [x] MostMatterと連携させる
+  - [x] KeyCloak認証で連携し同一ユーザで利用できるようにする
   - [ ] 画面に埋め込めないか調査
 
 ## データ検索機能
