@@ -289,7 +289,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   };
 
   return (
-    <AlertDialog open={eventAddOpen}>
+    <AlertDialog open={eventAddOpen} onOpenChange={setEventAddOpen}>
       <AlertDialogTrigger className='flex' asChild>
         <Button
           className='w-24 text-xs md:w-28 md:text-sm'

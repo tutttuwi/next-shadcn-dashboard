@@ -304,7 +304,7 @@ export function EventEditForm({
   };
 
   return (
-    <AlertDialog open={eventEditOpen}>
+    <AlertDialog open={eventEditOpen} onOpenChange={setEventEditOpen}>
       {displayButton && (
         <AlertDialogTrigger asChild>
           <Button

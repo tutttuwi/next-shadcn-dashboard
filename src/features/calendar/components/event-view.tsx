@@ -39,7 +39,7 @@ export function EventView({ event }: EventViewProps) {
 
   return (
     <>
-      <AlertDialog open={eventViewOpen}>
+      <AlertDialog open={eventViewOpen} onOpenChange={setEventViewOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className='flex flex-row items-center justify-between'>

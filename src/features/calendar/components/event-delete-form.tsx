@@ -41,7 +41,7 @@ export function EventDeleteForm({ id, title }: EventDeleteFormProps) {
   }
 
   return (
-    <AlertDialog open={eventDeleteOpen}>
+    <AlertDialog open={eventDeleteOpen} onOpenChange={setEventDeleteOpen}>
       <AlertDialogTrigger asChild>
         <Button variant='destructive' onClick={() => setEventDeleteOpen(true)}>
           {/* Delete Event */}
