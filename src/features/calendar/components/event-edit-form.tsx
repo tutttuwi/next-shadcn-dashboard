@@ -195,6 +195,13 @@ export function EventEditForm({
   >([]);
   const [showGuestList, setShowGuestList] = React.useState(true);
 
+  // 追加: イベント種別のstate
+  const [eventType, setEventType] = React.useState<'event' | 'training'>(
+    'event'
+  );
+  // 追加: 事前課題ファイル
+  const [assignmentFiles, setAssignmentFiles] = React.useState<File[]>([]);
+
   // allDayの値を監視
   const allDayValue = useWatch({
     control: form.control,
@@ -232,6 +239,10 @@ export function EventEditForm({
       color: event?.backgroundColor
     });
     setSelectedMembers(event?.extendedProps?.members ?? []);
+    // eventTypeの初期値
+    setEventType(event?.extendedProps?.eventType ?? 'event');
+    // assignmentFilesの初期値（ファイルは編集時は空でOK、必要ならeventから復元）
+    setAssignmentFiles([]);
   }, [form, event]);
 
   async function onSubmit(data: EventEditFormValues) {
@@ -277,6 +288,21 @@ export function EventEditForm({
     setSelectedMembers((prev) => prev.filter((m) => m.email !== email));
   };
 
+  // 追加: ファイル追加・削除ハンドラ
+  const handleAssignmentFilesChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files ?? []);
+    setAssignmentFiles((prev) => {
+      const existingNames = prev.map((f) => f.name);
+      const newFiles = files.filter((f) => !existingNames.includes(f.name));
+      return [...prev, ...newFiles];
+    });
+  };
+  const handleRemoveAssignmentFile = (name: string) => {
+    setAssignmentFiles((prev) => prev.filter((f) => f.name !== name));
+  };
+
   return (
     <AlertDialog open={eventEditOpen}>
       {displayButton && (
@@ -294,6 +320,30 @@ export function EventEditForm({
       <AlertDialogContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
+            {/* イベント種別 */}
+            <div className='mb-2 flex flex-row gap-4'>
+              {eventType === 'event' ? (
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-medium ${
+                    eventType === 'event'
+                      ? 'bg-gray-100 text-gray-700'
+                      : 'bg-transparent text-gray-400'
+                  }`}
+                >
+                  予定
+                </span>
+              ) : (
+                <span
+                  className={`rounded-full px-3 py-1 text-sm font-medium ${
+                    eventType === 'training'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-transparent text-gray-400'
+                  }`}
+                >
+                  研修
+                </span>
+              )}
+            </div>
             <div className='flex flex-col gap-4 md:flex-row'>
               <div className='flex-1 space-y-2.5'>
                 {/* タイトル */}
@@ -433,6 +483,55 @@ export function EventEditForm({
                     )}
                   />
                 </div>
+                {/* 事前課題ファイル（training時のみ） */}
+                {eventType === 'training' && (
+                  <FormItem>
+                    <div className='mb-1 flex items-center gap-2'>
+                      <span className='mb-0 block text-sm font-medium'>
+                        事前課題ファイル
+                      </span>
+                      <FormControl>
+                        <Input
+                          type='file'
+                          multiple
+                          onChange={handleAssignmentFilesChange}
+                          className='block w-auto text-sm'
+                          title='事前課題ファイルを選択'
+                        />
+                      </FormControl>
+                    </div>
+                    {assignmentFiles.length > 0 && (
+                      <div className='mt-1 flex flex-wrap gap-2 text-xs text-gray-600'>
+                        {assignmentFiles.map((file, idx) => (
+                          <div
+                            key={file.name + idx}
+                            className='flex items-center gap-2 rounded bg-gray-100 px-2 py-1'
+                          >
+                            <a
+                              href={URL.createObjectURL(file)}
+                              download={file.name}
+                              className='cursor-pointer underline hover:text-blue-700'
+                              target='_blank'
+                              rel='noopener noreferrer'
+                            >
+                              {file.name}
+                            </a>
+                            <button
+                              type='button'
+                              className='text-gray-400 hover:text-red-500'
+                              onClick={() =>
+                                handleRemoveAssignmentFile(file.name)
+                              }
+                              aria-label='ファイルを削除'
+                            >
+                              <X className='h-4 w-4' />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </FormItem>
+                )}
                 {/* 詳細 */}
                 <FormField
                   control={form.control}

@@ -43,7 +43,19 @@ export function EventView({ event }: EventViewProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className='flex flex-row items-center justify-between'>
-              <span className='text-lg font-bold'>{event?.title}</span>
+              <div className='flex items-center gap-2'>
+                {/* eventTypeラベル */}
+                {event?.extendedProps?.eventType === 'training' ? (
+                  <span className='rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700'>
+                    研修
+                  </span>
+                ) : (
+                  <span className='rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700'>
+                    予定
+                  </span>
+                )}
+                <span className='text-lg font-bold'>{event?.title}</span>
+              </div>
               <AlertDialogCancel onClick={() => setEventViewOpen(false)}>
                 <X className='h-5 w-5' />
               </AlertDialogCancel>

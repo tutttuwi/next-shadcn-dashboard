@@ -236,6 +236,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       start: data.start,
       end: data.end,
       extendedProps: {
+        eventType, // ← 追加: イベント種別も保存
         members: selectedMembers.map((member) => ({
           email: member.email,
           name: member.name,
@@ -249,15 +250,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
     addEvent(newEvent);
     setEventAddOpen(false);
     toast({
-      // title: 'Event added!',
       title: '予定を登録しました！',
-      action: (
-        // <ToastAction altText={'Click here to dismiss notification'}>
-        <ToastAction altText={'クリックして閉じる'}>
-          {/* Dismiss */}
-          閉じる
-        </ToastAction>
-      )
+      action: <ToastAction altText={'クリックして閉じる'}>閉じる</ToastAction>
     });
   }
 
