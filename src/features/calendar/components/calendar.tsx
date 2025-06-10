@@ -28,6 +28,7 @@ import { getDateFromMinutes } from '@/features/calendar/lib/utils';
 import { Card } from './ui/card';
 import { EventEditForm } from './event-edit-form';
 import { EventView } from './event-view';
+import { EventAddForm } from './event-add-form';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -42,13 +43,12 @@ type DayRenderProps = {
 };
 
 export default function Calendar() {
-  const { events, setEventAddOpen, setEventEditOpen, setEventViewOpen } =
-    useEvents();
-
   const calendarRef = useRef<FullCalendar | null>(null);
+  const { events, setEventAddOpen, setEventViewOpen, setEventEditOpen } =
+    useEvents();
+  const [selectedStart, setSelectedStart] = useState<Date>(new Date());
+  const [selectedEnd, setSelectedEnd] = useState<Date>(new Date());
   const [viewedDate, setViewedDate] = useState(new Date());
-  const [selectedStart, setSelectedStart] = useState(new Date());
-  const [selectedEnd, setSelectedEnd] = useState(new Date());
   const [selectedOldEvent, setSelectedOldEvent] = useState<
     CalendarEvent | undefined
   >();
@@ -204,9 +204,11 @@ export default function Calendar() {
     );
   };
 
-  const handleDateSelect = (info: DateSelectArg) => {
-    setSelectedStart(info.start);
-    setSelectedEnd(info.end);
+  // ドラッグ選択時の処理
+  const handleDateSelect = (selectInfo: DateSelectArg) => {
+    setSelectedStart(selectInfo.start);
+    setSelectedEnd(selectInfo.end);
+    setEventAddOpen(true);
   };
 
   const earliestHour = getDateFromMinutes(earliestTime)
