@@ -51,16 +51,16 @@ export function EventDeleteForm({ id, title }: EventDeleteFormProps) {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle className='flex flex-row items-center justify-between'>
-            <h3>Delete {title}</h3>
+            <h3>{title} を削除します</h3>
           </AlertDialogTitle>
-          Are you sure you want to delete this event?
+          本当に予定を削除しますか？
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={() => setEventDeleteOpen(false)}>
-            Cancel
+            キャンセル
           </AlertDialogCancel>
           <Button variant='destructive' onClick={() => onSubmit()}>
-            Delete
+            削除
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

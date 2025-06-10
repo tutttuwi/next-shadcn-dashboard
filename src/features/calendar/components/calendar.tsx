@@ -57,12 +57,18 @@ export default function Calendar() {
   >();
   const [isDrag, setIsDrag] = useState(false);
 
+  // カレンダーイベントクリック時の処理
+  // イベントの詳細を表示するために、選択されたイベントを設定
+  // また、イベントの編集や削除のために、選択されたイベントを設定
+  // イベントの詳細を表示するために、選択されたイベントを設定
   const handleEventClick = (info: EventClickArg) => {
     const event: CalendarEvent = {
       id: info.event.id,
       title: info.event.title,
       description: info.event.extendedProps.description,
       backgroundColor: info.event.backgroundColor,
+      allDay: info.event.allDay,
+      extendedProps: info.event.extendedProps,
       start: info.event.start!,
       end: info.event.end!
     };

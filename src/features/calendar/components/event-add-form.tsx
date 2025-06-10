@@ -245,6 +245,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       },
       color: data.color ?? '#76c7ef' // デフォルトカラーを設定
     };
+    console.log('Adding new event:', newEvent);
     addEvent(newEvent);
     setEventAddOpen(false);
     toast({

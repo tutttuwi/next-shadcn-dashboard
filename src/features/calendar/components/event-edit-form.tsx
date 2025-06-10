@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { useToast } from '@/features/calendar/hooks/use-toast';
 import {
@@ -10,13 +10,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@/features/calendar/components/ui/form';
 import { Input } from '@/features/calendar/components/ui/input';
 import { Textarea } from './ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { HexColorPicker } from 'react-colorful';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +29,7 @@ import { useEvents } from '@/features/calendar/context/events-context';
 import { ToastAction } from './ui/toast';
 import { CalendarEvent } from '@/features/calendar/utils/data';
 import { Button } from './ui/button';
-import { FilePenLine, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -45,22 +42,31 @@ import { Checkbox } from '@/components/ui/checkbox';
 const eventEditFormSchema = z.object({
   id: z.string(),
   title: z
-    .string({ required_error: 'Please enter a title.' })
-    .min(1, { message: 'Must provide a title for this event.' }),
-  description: z
-    .string({ required_error: 'Please enter a description.' })
-    .min(1, { message: 'Must provide a description for this event.' }),
+    .string({ required_error: 'タイトルを入力してください' })
+    .min(1, { message: 'タイトルは必須です。' }),
+  description: z.string({ required_error: '詳細説明を入力してください' }),
   start: z.date({
-    required_error: 'Please select a start time',
-    invalid_type_error: "That's not a date!"
+    required_error: '開始日時を選択してください',
+    invalid_type_error: '開始日時が不正です。'
   }),
   end: z.date({
-    required_error: 'Please select an end time',
-    invalid_type_error: "That's not a date!"
+    required_error: '終了日時を選択してください',
+    invalid_type_error: '終了日時が不正です。'
   }),
+  allDay: z.boolean().optional(),
+  members: z
+    .array(
+      z.object({
+        email: z.string(),
+        name: z.string(),
+        position: z.string(),
+        rank: z.string()
+      })
+    )
+    .optional(),
   color: z
-    .string({ required_error: 'Please select an event color.' })
-    .min(1, { message: 'Must provide a title for this event.' })
+    .string({ required_error: 'イベントカラーを選択してください' })
+    .min(1, { message: 'イベントカラーは必須です。' })
 });
 
 type EventEditFormValues = z.infer<typeof eventEditFormSchema>;
@@ -177,10 +183,9 @@ export function EventEditForm({
 }: EventEditFormProps) {
   const { addEvent, deleteEvent } = useEvents();
   const { eventEditOpen, setEventEditOpen } = useEvents();
-
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof eventEditFormSchema>>({
+  const form = useForm<EventEditFormValues>({
     resolver: zodResolver(eventEditFormSchema)
   });
 
@@ -190,6 +195,14 @@ export function EventEditForm({
   >([]);
   const [showGuestList, setShowGuestList] = React.useState(true);
 
+  // allDayの値を監視
+  const allDayValue = useWatch({
+    control: form.control,
+    name: 'allDay',
+    defaultValue: false
+  });
+
+  // 編集キャンセル時の処理
   const handleEditCancellation = () => {
     if (isDrag && oldEvent) {
       const resetEvent = {
@@ -200,13 +213,13 @@ export function EventEditForm({
         end: oldEvent.end,
         color: oldEvent.backgroundColor!
       };
-
       deleteEvent(oldEvent.id);
       addEvent(resetEvent);
     }
     setEventEditOpen(false);
   };
 
+  // 初期化
   useEffect(() => {
     form.reset({
       id: event?.id,
@@ -214,8 +227,11 @@ export function EventEditForm({
       description: event?.description,
       start: event?.start as Date,
       end: event?.end as Date,
+      allDay: event?.allDay ?? false,
+      members: event?.extendedProps?.members ?? [],
       color: event?.backgroundColor
     });
+    setSelectedMembers(event?.extendedProps?.members ?? []);
   }, [form, event]);
 
   async function onSubmit(data: EventEditFormValues) {
@@ -225,26 +241,22 @@ export function EventEditForm({
       description: data.description,
       start: data.start,
       end: data.end,
+      allDay: data.allDay,
+      extendedProps: { members: selectedMembers },
       color: data.color
     };
+    console.log('Updated Event:', newEvent);
     deleteEvent(data.id);
     addEvent(newEvent);
     setEventEditOpen(false);
 
     toast({
-      // title: 'Event edited!',
       title: '予定を更新しました！',
-      action: (
-        // <ToastAction altText={'Click here to dismiss notification'}>
-        <ToastAction altText={'クリックして閉じる'}>
-          {/* Dismiss */}
-          閉じる
-        </ToastAction>
-      )
+      action: <ToastAction altText={'クリックして閉じる'}>閉じる</ToastAction>
     });
   }
 
-  // フィルタリング
+  // メンバー候補フィルタ
   const filteredCandidates = memberCandidates.filter(
     (member) =>
       (member.email.includes(memberInput) ||
@@ -254,9 +266,15 @@ export function EventEditForm({
       !selectedMembers.some((m) => m.email === member.email)
   );
 
+  // メンバー追加
   const handleAddMember = (member: (typeof memberCandidates)[number]) => {
     setSelectedMembers((prev) => [...prev, member]);
     setMemberInput('');
+  };
+
+  // メンバー削除
+  const handleRemoveMember = (email: string) => {
+    setSelectedMembers((prev) => prev.filter((m) => m.email !== email));
   };
 
   return (
@@ -268,26 +286,17 @@ export function EventEditForm({
             variant='default'
             onClick={() => setEventEditOpen(true)}
           >
-            {/* Edit Event */}
             予定を編集
           </Button>
         </AlertDialogTrigger>
       )}
 
       <AlertDialogContent>
-        <AlertDialogHeader>
-          {/* <AlertDialogTitle>Edit {event?.title}</AlertDialogTitle> */}
-          <AlertDialogTitle>
-            <FilePenLine className='inline-block' /> {event?.title}
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
-            {/* 2カラム：タイトル以下の列とゲスト追加の列 */}
             <div className='flex flex-col gap-4 md:flex-row'>
               <div className='flex-1 space-y-2.5'>
-                {/* タイトル（ラベルなし） */}
+                {/* タイトル */}
                 <FormField
                   control={form.control}
                   name='title'
@@ -300,7 +309,7 @@ export function EventEditForm({
                     </FormItem>
                   )}
                 />
-                {/* 日時（ラベルなし） */}
+                {/* 日時 */}
                 <div className='flex items-center gap-2'>
                   <FormField
                     control={form.control}
@@ -312,7 +321,7 @@ export function EventEditForm({
                             value={field.value}
                             onChange={field.onChange}
                             hourCycle={24}
-                            granularity='minute'
+                            granularity={allDayValue ? 'day' : 'minute'}
                           />
                         </FormControl>
                         <FormMessage />
@@ -330,7 +339,7 @@ export function EventEditForm({
                             value={field.value}
                             onChange={field.onChange}
                             hourCycle={24}
-                            granularity='minute'
+                            granularity={allDayValue ? 'day' : 'minute'}
                           />
                         </FormControl>
                         <FormMessage />
@@ -338,46 +347,93 @@ export function EventEditForm({
                     )}
                   />
                 </div>
-                {/* カラー（ラベルなし） */}
-                <FormField
-                  control={form.control}
-                  name='color'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className='w-full'>
-                            <SelectValue>
-                              <div className='flex items-center'>
-                                <span
-                                  className='mb-0 inline-block h-4 w-4 rounded-full'
-                                  style={{ backgroundColor: field.value }}
-                                />
-                              </div>
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {colorOptions.map((color) => (
-                              <SelectItem key={color} value={color}>
+                {/* 終日・カラー */}
+                <div className='flex items-center gap-2'>
+                  <FormField
+                    control={form.control}
+                    name='allDay'
+                    render={({ field }) => (
+                      <FormItem className='flex flex-col'>
+                        <FormControl>
+                          <div className='flex items-center space-x-2'>
+                            <Checkbox
+                              id='allDay'
+                              checked={field.value}
+                              onCheckedChange={(checked) => {
+                                const isAllDay =
+                                  checked === 'indeterminate' ? false : checked;
+                                field.onChange(isAllDay);
+
+                                if (isAllDay) {
+                                  const startDate = form.getValues('start');
+                                  if (startDate) {
+                                    const newStart = new Date(startDate);
+                                    newStart.setHours(0, 0, 0, 0);
+                                    form.setValue('start', newStart);
+
+                                    const newEnd = new Date(newStart);
+                                    newEnd.setDate(newEnd.getDate() + 1);
+                                    newEnd.setHours(0, 0, 0, 0);
+                                    form.setValue('end', newEnd);
+                                  }
+                                } else {
+                                  form.setValue('start', event?.start as Date);
+                                  form.setValue('end', event?.end as Date);
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor='allDay'
+                              className='cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                            >
+                              終日
+                            </label>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='color'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger className='w-full'>
+                              <SelectValue>
                                 <div className='flex items-center'>
                                   <span
-                                    className='inline-block h-4 w-4 rounded-full'
-                                    style={{ backgroundColor: color }}
+                                    className='mb-0 inline-block h-4 w-4 rounded-full'
+                                    style={{ backgroundColor: field.value }}
                                   />
                                 </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* 詳細（ラベルなし） */}
+                              </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                              {colorOptions.map((color) => (
+                                <SelectItem key={color} value={color}>
+                                  <div className='flex items-center'>
+                                    <span
+                                      className='inline-block h-4 w-4 rounded-full'
+                                      style={{ backgroundColor: color }}
+                                    />
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                {/* 詳細 */}
                 <FormField
                   control={form.control}
                   name='description'
@@ -396,30 +452,72 @@ export function EventEditForm({
                 />
               </div>
               {/* 右側：ゲスト追加 */}
-              <div className='w-full flex-shrink-0 md:w-80'>
-                <FormItem>
-                  {/* ラベルなし */}
-                  <FormControl>
-                    <div>
-                      <div className='mb-1 flex items-center gap-2'>
-                        <div className='relative flex-1'>
-                          <Input
-                            type='text'
-                            placeholder='ゲストを追加 (名前・メール・役職・階級で検索可)'
-                            value={memberInput}
-                            onChange={(e) => setMemberInput(e.target.value)}
-                            autoComplete='off'
-                          />
-                          {memberInput && filteredCandidates.length > 0 && (
-                            <ul className='absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded border bg-white shadow'>
-                              {filteredCandidates.map((member) => (
-                                <li
+              <div className='w-1/3 w-full flex-shrink-0 md:w-1/3'>
+                <FormField
+                  control={form.control}
+                  name='members'
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <div>
+                          <div className='mb-1 flex items-center gap-2'>
+                            <div className='relative flex-1'>
+                              <Input
+                                type='text'
+                                placeholder='ゲストを追加 (名前・メール・役職・階級で検索可)'
+                                value={memberInput}
+                                onChange={(e) => setMemberInput(e.target.value)}
+                                autoComplete='off'
+                              />
+                              {memberInput && filteredCandidates.length > 0 && (
+                                <ul className='absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded border bg-white shadow'>
+                                  {filteredCandidates.map((member) => (
+                                    <li
+                                      key={member.email}
+                                      className='cursor-pointer px-2 py-2 hover:bg-gray-100'
+                                      onClick={() => handleAddMember(member)}
+                                    >
+                                      <div className='flex flex-col'>
+                                        <span className='font-semibold'>
+                                          {member.name}
+                                        </span>
+                                        <span className='text-xs text-gray-600'>
+                                          {member.email}
+                                        </span>
+                                        <span className='text-xs'>
+                                          {member.position} / {member.rank}
+                                        </span>
+                                      </div>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                            </div>
+                            <button
+                              type='button'
+                              aria-label={
+                                showGuestList ? 'ゲスト非表示' : 'ゲスト表示'
+                              }
+                              className='flex items-center justify-center p-1'
+                              onClick={() => setShowGuestList((prev) => !prev)}
+                            >
+                              {showGuestList ? (
+                                <ChevronUp className='h-5 w-5' />
+                              ) : (
+                                <ChevronDown className='h-5 w-5' />
+                              )}
+                            </button>
+                          </div>
+                          {/* 選択済みメンバーの表示 */}
+                          {showGuestList && (
+                            <div className='mt-2 flex max-h-48 w-full flex-col gap-2 overflow-y-auto'>
+                              {selectedMembers.map((member) => (
+                                <div
                                   key={member.email}
-                                  className='cursor-pointer px-2 py-2 hover:bg-gray-100'
-                                  onClick={() => handleAddMember(member)}
+                                  className='flex w-full items-center justify-between rounded bg-blue-50 px-3 py-2'
                                 >
-                                  <div className='flex flex-col'>
-                                    <span className='font-semibold'>
+                                  <div className='flex w-full flex-row items-center gap-2'>
+                                    <span className='text-xs'>
                                       {member.name}
                                     </span>
                                     <span className='text-xs text-gray-600'>
@@ -429,65 +527,29 @@ export function EventEditForm({
                                       {member.position} / {member.rank}
                                     </span>
                                   </div>
-                                </li>
+                                  <button
+                                    type='button'
+                                    className='ml-2 text-lg text-blue-500 hover:text-blue-700'
+                                    onClick={() =>
+                                      handleRemoveMember(member.email)
+                                    }
+                                  >
+                                    <X className='h-5 w-5' />
+                                  </button>
+                                </div>
                               ))}
-                            </ul>
-                          )}
-                        </div>
-                        <button
-                          type='button'
-                          aria-label={
-                            showGuestList ? 'ゲスト非表示' : 'ゲスト表示'
-                          }
-                          className='flex items-center justify-center p-1'
-                          onClick={() => setShowGuestList((prev) => !prev)}
-                        >
-                          {showGuestList ? (
-                            <ChevronUp className='h-5 w-5' />
-                          ) : (
-                            <ChevronDown className='h-5 w-5' />
-                          )}
-                        </button>
-                      </div>
-                      {/* 選択済みメンバーの表示 */}
-                      {showGuestList && (
-                        <div className='mt-2 flex max-h-48 w-full flex-col gap-2 overflow-y-auto'>
-                          {selectedMembers.map((member) => (
-                            <div
-                              key={member.email}
-                              className='flex w-full items-center justify-between rounded bg-blue-50 px-3 py-2'
-                            >
-                              <div className='flex w-full flex-row items-center gap-2'>
-                                <span className='text-xs'>{member.name}</span>
-                                <span className='text-xs text-gray-600'>
-                                  {member.email}
-                                </span>
-                                <span className='text-xs'>
-                                  {member.position} / {member.rank}
-                                </span>
-                              </div>
-                              <button
-                                type='button'
-                                className='ml-2 text-lg text-blue-500 hover:text-blue-700'
-                                onClick={() =>
-                                  setSelectedMembers((prev) =>
-                                    prev.filter((m) => m.email !== member.email)
-                                  )
-                                }
-                              >
-                                <X className='h-5 w-5' />
-                              </button>
                             </div>
-                          ))}
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </FormControl>
-                </FormItem>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
             <AlertDialogFooter className='pt-2'>
-              <AlertDialogCancel onClick={() => handleEditCancellation()}>
+              <AlertDialogCancel onClick={handleEditCancellation}>
                 キャンセル
               </AlertDialogCancel>
               <AlertDialogAction type='submit'>更新</AlertDialogAction>

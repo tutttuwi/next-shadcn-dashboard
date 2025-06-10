@@ -56,6 +56,8 @@ export const EventsProvider: React.FC<{ children: ReactNode }> = ({
 
   const addEvent = (event: CalendarEvent) => {
     setEvents((prevEvents) => [...prevEvents, event]);
+    // console.log('Event added:', event);
+    console.log('Current events:', events);
   };
 
   const deleteEvent = (id: string) => {
