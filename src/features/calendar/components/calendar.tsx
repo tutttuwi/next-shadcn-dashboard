@@ -430,7 +430,7 @@ export default function Calendar() {
               slotMaxTime={calendarLatestTime}
               allDaySlot={true}
               allDayText='終日'
-              firstDay={1}
+              firstDay={0} // 0: 日曜日, 1: 月曜日
               height={'80vh'} // 管理画面埋め込み調整
               scrollTime='08:00:00'
               displayEventEnd={true}

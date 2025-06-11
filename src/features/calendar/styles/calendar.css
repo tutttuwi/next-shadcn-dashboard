@@ -127,3 +127,32 @@ td.fc-daygrid-day.fc-day {
 .fc.fc-media-screen.fc-direction-ltr.fc-theme-standard {
   width: 100%;
 }
+
+/* 月表示(dayGrid)の土曜・日曜 */
+.fc-day-sat {
+  background-color: #e0f2fe !important;
+  /* 土曜: 淡い青 (Tailwind blue-100) */
+}
+
+.fc-day-sun {
+  background-color: #fee2e2 !important;
+  /* 日曜: 淡い赤 (Tailwind red-100) */
+}
+
+/* 週表示(timeGrid)の土曜・日曜 */
+.fc-timegrid-col-sat {
+  background-color: #e0f2fe !important;
+}
+
+.fc-timegrid-col-sun {
+  background-color: #fee2e2 !important;
+}
+
+/* マルチマンスビュー対応（必要なら） */
+.fc-multimonth-day-sat {
+  background-color: #e0f2fe !important;
+}
+
+.fc-multimonth-day-sun {
+  background-color: #fee2e2 !important;
+}
