@@ -253,13 +253,26 @@ export function EventEditForm({
       start: data.start,
       end: data.end,
       allDay: data.allDay,
-      extendedProps: { members: selectedMembers },
-      color: data.color
+      extendedProps: {
+        members: selectedMembers,
+        backgroundColor: data.color,
+        color: data.color,
+        eventType
+      },
+      color: data.color,
+      backgroundColor: data.color
     };
     console.log('Updated Event:', newEvent);
     deleteEvent(data.id);
     addEvent(newEvent);
     setEventEditOpen(false);
+
+    // クエリパラメータ削除
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('id');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
 
     toast({
       title: '予定を更新しました！',
@@ -304,7 +317,7 @@ export function EventEditForm({
   };
 
   return (
-    <AlertDialog open={eventEditOpen} onOpenChange={setEventEditOpen}>
+    <AlertDialog open={eventEditOpen}>
       {displayButton && (
         <AlertDialogTrigger asChild>
           <Button

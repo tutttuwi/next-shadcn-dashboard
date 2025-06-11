@@ -86,7 +86,7 @@ export function EventView({ event }: EventViewProps) {
                       style={{ backgroundColor: event?.backgroundColor }}
                     />
                     <span className='text-xs text-gray-500'>
-                      {event?.backgroundColor}
+                      {event?.backgroundColor || '未設定'}
                     </span>
                   </div>
                 </div>

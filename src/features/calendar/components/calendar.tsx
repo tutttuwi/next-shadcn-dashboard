@@ -45,6 +45,7 @@ type DayRenderProps = {
 };
 
 export default function Calendar() {
+  const router = useRouter();
   const calendarRef = useRef<FullCalendar | null>(null);
   const { events, setEventAddOpen, setEventViewOpen, setEventEditOpen } =
     useEvents();
@@ -83,11 +84,24 @@ export default function Calendar() {
       start: info.event.start!,
       end: info.event.end!
     };
+    console.log('handleEventClick info', info);
+    console.log('handleEventClick', event);
 
     setIsDrag(false);
     setSelectedOldEvent(event);
     setSelectedEvent(event);
     setEventViewOpen(true);
+  };
+
+  const handleSearchEventClick = (event: CalendarEvent) => {
+    // router.push(`/dashboard/calendar?id=${event.id}`);
+    const found = events.find((e) => e.id === event.id);
+    if (found) {
+      setIsDrag(false);
+      setSelectedOldEvent(found);
+      setSelectedEvent(found);
+      setEventViewOpen(true);
+    }
   };
 
   const handleEventChange = (info: EventChangeArg) => {
@@ -288,6 +302,19 @@ export default function Calendar() {
     }
   }, [idFromUrl, events]);
 
+  // イベントが更新されたときに検索結果を更新
+  // 検索モードのときにイベントが更新された場合、検索結果を再計算
+  useEffect(() => {
+    if (searchMode && searchText.trim() !== '') {
+      const filtered = events.filter(
+        (event) =>
+          event.title?.includes(searchText) ||
+          event.description?.includes(searchText)
+      );
+      setFilteredEvents(filtered);
+    }
+  }, [events]);
+
   return (
     <div className='space-y-5'>
       {/* 検索ボックス */}
@@ -321,22 +348,44 @@ export default function Calendar() {
                   </td>
                 </tr>
               ) : (
-                filteredEvents.map((event) => (
-                  <tr
-                    key={event.id}
-                    className='cursor-pointer hover:bg-blue-50'
-                    onClick={() => handleEventClick(event as any)}
-                  >
-                    <td className='border px-2 py-1'>{event.title}</td>
-                    <td className='border px-2 py-1'>
-                      {event.start?.toLocaleString()}
-                    </td>
-                    <td className='border px-2 py-1'>
-                      {event.end?.toLocaleString()}
-                    </td>
-                    <td className='border px-2 py-1'>{event.description}</td>
-                  </tr>
-                ))
+                filteredEvents.map((event) => {
+                  console.log('searchMode event', event);
+                  // const eventClickArg: any = {
+                  //   event: {
+                  //     ...event,
+                  //     extendedProps: {
+                  //       description: event.description,
+                  //       color: event.color,
+                  //       backgroundColor: event.backgroundColor
+                  //     }
+                  //     // id: event.id,
+                  //     // title: event.title,
+                  //     // start: event.start,
+                  //     // end: event.end,
+                  //     // extendedProps: {
+                  //     //   description: event.description,
+                  //     //   color: event.color,
+                  //     //   backgroundColor: event.backgroundColor
+                  //     // }
+                  //   }
+                  // };
+                  return (
+                    <tr
+                      key={event.id}
+                      className='cursor-pointer hover:bg-blue-50'
+                      onClick={() => handleSearchEventClick(event)}
+                    >
+                      <td className='border px-2 py-1'>{event.title}</td>
+                      <td className='border px-2 py-1'>
+                        {event.start?.toLocaleString()}
+                      </td>
+                      <td className='border px-2 py-1'>
+                        {event.end?.toLocaleString()}
+                      </td>
+                      <td className='border px-2 py-1'>{event.description}</td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
