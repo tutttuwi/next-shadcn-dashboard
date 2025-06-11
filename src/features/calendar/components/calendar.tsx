@@ -350,25 +350,6 @@ export default function Calendar() {
               ) : (
                 filteredEvents.map((event) => {
                   console.log('searchMode event', event);
-                  // const eventClickArg: any = {
-                  //   event: {
-                  //     ...event,
-                  //     extendedProps: {
-                  //       description: event.description,
-                  //       color: event.color,
-                  //       backgroundColor: event.backgroundColor
-                  //     }
-                  //     // id: event.id,
-                  //     // title: event.title,
-                  //     // start: event.start,
-                  //     // end: event.end,
-                  //     // extendedProps: {
-                  //     //   description: event.description,
-                  //     //   color: event.color,
-                  //     //   backgroundColor: event.backgroundColor
-                  //     // }
-                  //   }
-                  // };
                   return (
                     <tr
                       key={event.id}
