@@ -40,7 +40,7 @@ export function EventView({ event }: EventViewProps) {
   return (
     <>
       <AlertDialog open={eventViewOpen} onOpenChange={setEventViewOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className='flex h-[90vh] max-h-[90vh] w-[90vw] max-w-[90vw] flex-col justify-start overflow-y-auto'>
           <AlertDialogHeader>
             <AlertDialogTitle className='flex flex-row items-center justify-between'>
               <div className='flex items-center gap-2'>
@@ -56,9 +56,24 @@ export function EventView({ event }: EventViewProps) {
                 )}
                 <span className='text-lg font-bold'>{event?.title}</span>
               </div>
-              <AlertDialogCancel onClick={() => setEventViewOpen(false)}>
-                <X className='h-5 w-5' />
-              </AlertDialogCancel>
+              <div className='flex gap-2'>
+                {/* 予定を編集をクリックされたとき自ダイアログは閉じる */}
+                <div
+                  onClick={() => setEventViewOpen(false)}
+                  className='flex items-center'
+                >
+                  <EventEditForm
+                    oldEvent={event}
+                    event={event}
+                    isDrag={false}
+                    displayButton={true}
+                  />
+                </div>
+                <EventDeleteForm id={event?.id} title={event?.title} />
+                <AlertDialogCancel onClick={() => setEventViewOpen(false)}>
+                  <X className='h-5 w-5' />
+                </AlertDialogCancel>
+              </div>
             </AlertDialogTitle>
             <div className='mt-2 flex flex-col gap-4 md:flex-row'>
               {/* 左カラム */}
@@ -122,18 +137,7 @@ export function EventView({ event }: EventViewProps) {
               </div>
             </div>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <EventDeleteForm id={event?.id} title={event?.title} />
-            {/* 予定を編集をクリックされたとき自ダイアログは閉じる */}
-            <div onClick={() => setEventViewOpen(false)}>
-              <EventEditForm
-                oldEvent={event}
-                event={event}
-                isDrag={false}
-                displayButton={true}
-              />
-            </div>
-          </AlertDialogFooter>
+          <AlertDialogFooter></AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
