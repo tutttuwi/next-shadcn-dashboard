@@ -17,7 +17,7 @@ import multiMonthPlugin from '@fullcalendar/multimonth';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import CalendarNav from './calendar-nav';
 import {
   CalendarEvent,
@@ -29,6 +29,8 @@ import { Card } from './ui/card';
 import { EventEditForm } from './event-edit-form';
 import { EventView } from './event-view';
 import { EventAddForm } from './event-add-form';
+import { Input } from '@/features/calendar/components/ui/input';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -56,6 +58,15 @@ export default function Calendar() {
     CalendarEvent | undefined
   >();
   const [isDrag, setIsDrag] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [searchMode, setSearchMode] = useState(false);
+  const [filteredEvents, setFilteredEvents] = useState<CalendarEvent[]>([]);
+
+  const searchParams =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : null;
+  const idFromUrl = searchParams?.get('id');
 
   // カレンダーイベントクリック時の処理
   // イベントの詳細を表示するために、選択されたイベントを設定
@@ -65,7 +76,7 @@ export default function Calendar() {
     const event: CalendarEvent = {
       id: info.event.id,
       title: info.event.title,
-      description: info.event.extendedProps.description,
+      description: info.event.extendedProps?.description,
       backgroundColor: info.event.backgroundColor,
       allDay: info.event.allDay,
       extendedProps: info.event.extendedProps,
@@ -231,68 +242,169 @@ export default function Calendar() {
   const calendarEarliestTime = `${earliestHour}:${earliestMin}`;
   const calendarLatestTime = `${latestHour}:${latestMin}`;
 
+  // 検索処理
+  const handleSearch = () => {
+    if (searchText.trim() === '') {
+      setSearchMode(false);
+      setFilteredEvents([]);
+      return;
+    }
+    const filtered = events.filter(
+      (event) =>
+        event.title?.includes(searchText) ||
+        event.description?.includes(searchText)
+    );
+    setFilteredEvents(filtered);
+    setSearchMode(true);
+  };
+
+  // 入力ボックスのキーハンドラ
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+    if (e.key === 'Escape') {
+      setSearchText('');
+      setSearchMode(false);
+      setFilteredEvents([]);
+    }
+  };
+
+  // 入力クリア時
+  useEffect(() => {
+    if (searchText === '') {
+      setSearchMode(false);
+      setFilteredEvents([]);
+    }
+  }, [searchText]);
+
+  useEffect(() => {
+    if (idFromUrl && events.length > 0) {
+      const found = events.find((e) => e.id === idFromUrl);
+      if (found) {
+        setSelectedEvent(found);
+        setEventViewOpen(true);
+      }
+    }
+  }, [idFromUrl, events]);
+
   return (
     <div className='space-y-5'>
-      <CalendarNav
-        calendarRef={calendarRef}
-        start={selectedStart}
-        end={selectedEnd}
-        viewedDate={viewedDate}
-      />
-
-      <Card className='p-3'>
-        <FullCalendar
-          locale={'ja'} // 日本語化
-          navLinks // カレンダー内の日付クリックで日表示に移動するかどうか
-          ref={calendarRef}
-          timeZone='local'
-          plugins={[
-            dayGridPlugin,
-            timeGridPlugin,
-            multiMonthPlugin,
-            interactionPlugin,
-            listPlugin
-          ]}
-          initialView='timeGridWeek'
-          headerToolbar={false}
-          slotMinTime={calendarEarliestTime}
-          slotMaxTime={calendarLatestTime}
-          allDaySlot={true}
-          allDayText='終日'
-          firstDay={1}
-          height={'80vh'} // 管理画面埋め込み調整
-          scrollTime='08:00:00'
-          displayEventEnd={true}
-          windowResizeDelay={0}
-          events={events}
-          slotLabelFormat={{
-            hour: 'numeric',
-            minute: '2-digit'
-            // hour12: true
-          }}
-          eventTimeFormat={{
-            hour: 'numeric',
-            minute: '2-digit'
-            // hour12: true
-          }}
-          eventBorderColor={'black'}
-          // contentHeight={'auto'} // autoだとカレンダーの時間ビューをスクロールできない
-
-          expandRows={true}
-          dayCellContent={(dayInfo) => <DayRender info={dayInfo} />}
-          // eventContent={(eventInfo) => <EventItem info={eventInfo} />}
-          dayHeaderContent={(headerInfo) => <DayHeader info={headerInfo} />}
-          eventClick={(eventInfo) => handleEventClick(eventInfo)}
-          eventChange={(eventInfo) => handleEventChange(eventInfo)}
-          select={handleDateSelect}
-          datesSet={(dates) => setViewedDate(dates.view.currentStart)}
-          dateClick={() => setEventAddOpen(true)}
-          nowIndicator // 現在時刻に赤のインジケータを表示
-          editable
-          selectable
-          dayMaxEvents // 月表示ではみ出たイベントを「+N more」の表示にする
+      {/* 検索ボックス */}
+      <div className='mb-2 flex justify-end'>
+        <Input
+          className='w-80'
+          placeholder='予定を検索'
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={handleInputKeyDown}
         />
-      </Card>
+      </div>
+
+      {/* 検索結果テーブル */}
+      {searchMode ? (
+        <div className='overflow-x-auto'>
+          <table className='min-w-full border'>
+            <thead>
+              <tr>
+                <th className='border px-2 py-1'>タイトル</th>
+                <th className='border px-2 py-1'>開始</th>
+                <th className='border px-2 py-1'>終了</th>
+                <th className='border px-2 py-1'>説明</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className='py-2 text-center'>
+                    該当する予定がありません
+                  </td>
+                </tr>
+              ) : (
+                filteredEvents.map((event) => (
+                  <tr
+                    key={event.id}
+                    className='cursor-pointer hover:bg-blue-50'
+                    onClick={() => handleEventClick(event as any)}
+                  >
+                    <td className='border px-2 py-1'>{event.title}</td>
+                    <td className='border px-2 py-1'>
+                      {event.start?.toLocaleString()}
+                    </td>
+                    <td className='border px-2 py-1'>
+                      {event.end?.toLocaleString()}
+                    </td>
+                    <td className='border px-2 py-1'>{event.description}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <>
+          <CalendarNav
+            calendarRef={calendarRef}
+            start={selectedStart}
+            end={selectedEnd}
+            viewedDate={viewedDate}
+          />
+          <Card className='p-3'>
+            <FullCalendar
+              locale={'ja'} // 日本語化
+              navLinks // カレンダー内の日付クリックで日表示に移動するかどうか
+              ref={calendarRef}
+              timeZone='local'
+              plugins={[
+                dayGridPlugin,
+                timeGridPlugin,
+                multiMonthPlugin,
+                interactionPlugin,
+                listPlugin
+              ]}
+              initialView='timeGridWeek'
+              headerToolbar={false}
+              slotMinTime={calendarEarliestTime}
+              slotMaxTime={calendarLatestTime}
+              allDaySlot={true}
+              allDayText='終日'
+              firstDay={1}
+              height={'80vh'} // 管理画面埋め込み調整
+              scrollTime='08:00:00'
+              displayEventEnd={true}
+              windowResizeDelay={0}
+              events={events}
+              slotLabelFormat={{
+                hour: 'numeric',
+                minute: '2-digit'
+                // hour12: true
+              }}
+              eventTimeFormat={{
+                hour: 'numeric',
+                minute: '2-digit'
+                // hour12: true
+              }}
+              eventBorderColor={'black'}
+              // contentHeight={'auto'} // autoだとカレンダーの時間ビューをスクロールできない
+
+              expandRows={true}
+              dayCellContent={(dayInfo) => <DayRender info={dayInfo} />}
+              // eventContent={(eventInfo) => <EventItem info={eventInfo} />}
+              dayHeaderContent={(headerInfo) => <DayHeader info={headerInfo} />}
+              eventClick={(eventInfo) => handleEventClick(eventInfo)}
+              eventChange={(eventInfo) => handleEventChange(eventInfo)}
+              select={handleDateSelect}
+              datesSet={(dates) => setViewedDate(dates.view.currentStart)}
+              dateClick={() => setEventAddOpen(true)}
+              nowIndicator // 現在時刻に赤のインジケータを表示
+              editable
+              selectable
+              dayMaxEvents // 月表示ではみ出たイベントを「+N more」の表示にする
+            />
+          </Card>
+        </>
+      )}
+
       <EventEditForm
         oldEvent={selectedOldEvent}
         event={selectedEvent}
