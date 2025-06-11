@@ -237,19 +237,17 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       id: String(events.length + 1),
       title: data.title,
       description: data.description,
-      allDay: data.allDay,
       start: data.start,
       end: data.end,
+      allDay: data.allDay,
       extendedProps: {
-        eventType, // ← 追加: イベント種別も保存
-        members: selectedMembers.map((member) => ({
-          email: member.email,
-          name: member.name,
-          position: member.position,
-          rank: member.rank
-        }))
+        members: selectedMembers,
+        backgroundColor: data.color,
+        color: data.color,
+        eventType
       },
-      color: data.color ?? '#76c7ef' // デフォルトカラーを設定
+      color: data.color,
+      backgroundColor: data.color
     };
     console.log('Adding new event:', newEvent);
     addEvent(newEvent);
@@ -294,7 +292,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   };
 
   return (
-    <AlertDialog open={eventAddOpen} onOpenChange={setEventAddOpen}>
+    <AlertDialog open={eventAddOpen}>
       <AlertDialogTrigger className='flex' asChild>
         <Button
           className='w-24 text-xs md:w-28 md:text-sm'
