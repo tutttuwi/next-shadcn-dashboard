@@ -342,11 +342,11 @@ export default function Calendar() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>種別</TableHead> {/* ← 追加 */}
+                <TableHead>種別</TableHead>
                 <TableHead>タイトル</TableHead>
                 <TableHead>開始</TableHead>
                 <TableHead>終了</TableHead>
-                <TableHead>説明</TableHead>
+                <TableHead className='w-1/3 truncate'>説明</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -390,7 +390,11 @@ export default function Calendar() {
                     <TableCell>{event.title}</TableCell>
                     <TableCell>{event.start?.toLocaleString()}</TableCell>
                     <TableCell>{event.end?.toLocaleString()}</TableCell>
-                    <TableCell>{event.description}</TableCell>
+                    <TableCell className='w-48 max-w-64 min-w-32 truncate'>
+                      <span className='block overflow-hidden text-ellipsis whitespace-nowrap'>
+                        {event.description}
+                      </span>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
