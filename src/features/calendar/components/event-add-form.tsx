@@ -304,15 +304,25 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
           <p>予定を追加</p>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className='flex h-[90vh] max-h-[90vh] w-[90vw] max-w-[90vw] flex-col justify-start overflow-y-auto'>
         <AlertDialogHeader>
           {/* スペース削減のためタイトル削除 */}
         </AlertDialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
+            {/* 右上のキャンセル（×）ボタン */}
+            <button
+              type='button'
+              className='absolute top-4 right-4 z-10 text-gray-400 hover:text-red-500'
+              onClick={() => setEventAddOpen(false)}
+              aria-label='キャンセル'
+            >
+              <X className='h-6 w-6' />
+            </button>
+
             {/* イベント種類ラジオ：1行で表示 */}
-            <div className='mb-2 flex flex-row gap-6'>
+            <div className='mb-2 flex flex-row items-center justify-between gap-6'>
               <RadioGroup
                 value={eventType}
                 onValueChange={(val) =>
@@ -539,7 +549,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                       <FormControl>
                         <Textarea
                           placeholder='説明を追加'
-                          className='h-36 max-h-46'
+                          className='h-100 max-h-120'
                           {...field}
                         />
                       </FormControl>
@@ -550,6 +560,16 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
               </div>
               {/* 右側：ゲスト追加 */}
               <div className='w-full flex-shrink-0 md:w-80'>
+                {/* 登録ボタンをゲスト追加の上・左詰めで表示 */}
+                <div className='mb-2'>
+                  <AlertDialogAction
+                    type='submit'
+                    className='w-auto rounded bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700'
+                  >
+                    登録
+                  </AlertDialogAction>
+                </div>
+                {/* ゲスト追加フォーム */}
                 <FormField
                   control={form.control}
                   name='members'
@@ -649,12 +669,6 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                 />
               </div>
             </div>
-            <AlertDialogFooter className='pt-2'>
-              <AlertDialogCancel onClick={() => setEventAddOpen(false)}>
-                キャンセル
-              </AlertDialogCancel>
-              <AlertDialogAction type='submit'>登録</AlertDialogAction>
-            </AlertDialogFooter>
           </form>
         </Form>
       </AlertDialogContent>

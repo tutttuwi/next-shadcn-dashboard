@@ -333,33 +333,32 @@ export function EventEditForm({
         </AlertDialogTrigger>
       )}
 
-      <AlertDialogContent>
+      <AlertDialogContent className='flex h-[90vh] max-h-[90vh] w-[90vw] max-w-[90vw] flex-col justify-start overflow-y-auto'>
+        {/* 右上のキャンセル（×）ボタン */}
+        <button
+          type='button'
+          className='absolute top-4 right-4 z-10 text-gray-400 hover:text-red-500'
+          onClick={handleEditCancellation}
+          aria-label='キャンセル'
+        >
+          <X className='h-6 w-6' />
+        </button>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-2.5'>
-            {/* イベント種別 */}
+            {/* イベント種別ラベル */}
             <div className='mb-2 flex flex-row gap-4'>
               {eventType === 'event' ? (
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${
-                    eventType === 'event'
-                      ? 'bg-gray-100 text-gray-700'
-                      : 'bg-transparent text-gray-400'
-                  }`}
-                >
+                <span className='rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700'>
                   予定
                 </span>
               ) : (
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${
-                    eventType === 'training'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-transparent text-gray-400'
-                  }`}
-                >
+                <span className='rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700'>
                   研修
                 </span>
               )}
             </div>
+            {/* 2カラム：タイトル以下の列とゲスト追加の列 */}
             <div className='flex flex-col gap-4 md:flex-row'>
               <div className='flex-1 space-y-2.5'>
                 {/* タイトル */}
@@ -557,7 +556,7 @@ export function EventEditForm({
                       <FormControl>
                         <Textarea
                           placeholder='説明を追加'
-                          className='h-36 max-h-46'
+                          className='h-100 max-h-120'
                           {...field}
                         />
                       </FormControl>
@@ -568,6 +567,15 @@ export function EventEditForm({
               </div>
               {/* 右側：ゲスト追加 */}
               <div className='w-1/3 w-full flex-shrink-0 md:w-1/3'>
+                {/* 更新ボタンをゲスト追加の上・左詰めで表示 */}
+                <div className='mb-2'>
+                  <AlertDialogAction
+                    type='submit'
+                    className='w-auto rounded bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700'
+                  >
+                    更新
+                  </AlertDialogAction>
+                </div>
                 <FormField
                   control={form.control}
                   name='members'
@@ -663,12 +671,6 @@ export function EventEditForm({
                 />
               </div>
             </div>
-            <AlertDialogFooter className='pt-2'>
-              <AlertDialogCancel onClick={handleEditCancellation}>
-                キャンセル
-              </AlertDialogCancel>
-              <AlertDialogAction type='submit'>更新</AlertDialogAction>
-            </AlertDialogFooter>
           </form>
         </Form>
       </AlertDialogContent>
