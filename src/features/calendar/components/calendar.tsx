@@ -325,16 +325,24 @@ export default function Calendar() {
 
   return (
     <div className='space-y-5'>
-      {/* 検索ボックス */}
-      <div className='mb-2 flex justify-end'>
-        <Input
-          className='w-80'
-          placeholder='予定を検索'
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
-      </div>
+      <CalendarNav
+        calendarRef={calendarRef}
+        start={selectedStart}
+        end={selectedEnd}
+        viewedDate={viewedDate}
+        searchMode={searchMode}
+        searchComponent={
+          <div className='mb-2 flex justify-end'>
+            <Input
+              className='w-80'
+              placeholder='予定を検索'
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={handleInputKeyDown}
+            />
+          </div>
+        }
+      />
 
       {/* 検索結果テーブル */}
       {searchMode ? (
@@ -403,12 +411,6 @@ export default function Calendar() {
         </div>
       ) : (
         <>
-          <CalendarNav
-            calendarRef={calendarRef}
-            start={selectedStart}
-            end={selectedEnd}
-            viewedDate={viewedDate}
-          />
           <Card className='p-3'>
             <FullCalendar
               locale={'ja'} // 日本語化
