@@ -31,6 +31,14 @@ import { EventView } from './event-view';
 import { EventAddForm } from './event-add-form';
 import { Input } from '@/features/calendar/components/ui/input';
 import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell
+} from '@/components/ui/table';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -331,45 +339,63 @@ export default function Calendar() {
       {/* 検索結果テーブル */}
       {searchMode ? (
         <div className='overflow-x-auto'>
-          <table className='min-w-full border'>
-            <thead>
-              <tr>
-                <th className='border px-2 py-1'>タイトル</th>
-                <th className='border px-2 py-1'>開始</th>
-                <th className='border px-2 py-1'>終了</th>
-                <th className='border px-2 py-1'>説明</th>
-              </tr>
-            </thead>
-            <tbody>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>種別</TableHead> {/* ← 追加 */}
+                <TableHead>タイトル</TableHead>
+                <TableHead>開始</TableHead>
+                <TableHead>終了</TableHead>
+                <TableHead>説明</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {filteredEvents.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className='py-2 text-center'>
+                <TableRow>
+                  <TableCell colSpan={5} className='py-2 text-center'>
                     該当する予定がありません
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : (
-                filteredEvents.map((event) => {
-                  console.log('searchMode event', event);
-                  return (
-                    <tr
-                      key={event.id}
-                      className='cursor-pointer hover:bg-blue-50'
-                      onClick={() => handleSearchEventClick(event)}
-                    >
-                      <td className='border px-2 py-1'>{event.title}</td>
-                      <td className='border px-2 py-1'>
-                        {event.start?.toLocaleString()}
-                      </td>
-                      <td className='border px-2 py-1'>
-                        {event.end?.toLocaleString()}
-                      </td>
-                      <td className='border px-2 py-1'>{event.description}</td>
-                    </tr>
-                  );
-                })
+                filteredEvents.map((event) => (
+                  <TableRow
+                    key={event.id}
+                    className='cursor-pointer hover:bg-blue-50'
+                    onClick={() => handleSearchEventClick(event)}
+                  >
+                    {/* 種別列 */}
+                    <TableCell>
+                      {event.extendedProps?.eventType === 'training' ? (
+                        <span
+                          className='rounded-full px-3 py-1 text-xs font-medium'
+                          style={{
+                            backgroundColor: event.backgroundColor ?? '#bfdbfe',
+                            color: '#1e40af'
+                          }}
+                        >
+                          研修
+                        </span>
+                      ) : (
+                        <span
+                          className='rounded-full px-3 py-1 text-xs font-medium'
+                          style={{
+                            backgroundColor: event.backgroundColor ?? '#f3f4f6',
+                            color: '#374151'
+                          }}
+                        >
+                          予定
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>{event.title}</TableCell>
+                    <TableCell>{event.start?.toLocaleString()}</TableCell>
+                    <TableCell>{event.end?.toLocaleString()}</TableCell>
+                    <TableCell>{event.description}</TableCell>
+                  </TableRow>
+                ))
               )}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       ) : (
         <>
