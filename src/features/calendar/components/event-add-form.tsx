@@ -215,12 +215,17 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
    * フォームのデフォルト値設定
    */
   useEffect(() => {
+    const shhmm = start ? start.toTimeString().slice(0, 5) : '';
+    const ehhmm = start ? end.toTimeString().slice(0, 5) : '';
+    console.log('shhmm:', shhmm, 'ehhmm:', ehhmm);
+
     form.reset({
       title: '',
       description: '',
       start: start,
       end: end,
       members: [],
+      allDay: shhmm == '00:00' && ehhmm == '00:00', // 終日エリアがクリックされた場合はtrue
       color: '#76c7ef'
     });
     setSelectedMembers([]); // ← 追加：初期表示時にselectedMembersを空で初期化

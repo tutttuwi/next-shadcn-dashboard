@@ -228,13 +228,16 @@ export function EventEditForm({
 
   // 初期化
   useEffect(() => {
+    const shhmm = event?.start ? event.start.toTimeString().slice(0, 5) : '';
+    const ehhmm = event?.start ? event.end.toTimeString().slice(0, 5) : '';
+    console.log('shhmm:', shhmm, 'ehhmm:', ehhmm);
     form.reset({
       id: event?.id,
       title: event?.title,
       description: event?.description,
       start: event?.start as Date,
       end: event?.end as Date,
-      allDay: event?.allDay ?? false,
+      allDay: event?.allDay || (shhmm == '00:00' && ehhmm == '00:00'),
       members: event?.extendedProps?.members ?? [],
       color: event?.backgroundColor
     });
