@@ -40,6 +40,7 @@ import {
   TableCell
 } from '@/components/ui/table';
 import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -406,14 +407,14 @@ export default function Calendar() {
                 }}
               />
             ) : (
-              <button
+              <Button
                 type='button'
                 className='p-2 text-gray-500 hover:text-blue-600'
                 onClick={() => setShowSearchInput(true)}
                 aria-label='検索'
               >
                 <Search className='h-5 w-5' />
-              </button>
+              </Button>
             )}
           </div>
         }
