@@ -45,6 +45,13 @@ import {
   TabsTrigger
 } from '@/features/calendar/components/ui/tabs';
 import { EventAddForm } from './event-add-form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/features/calendar/components/ui/select';
 
 interface CalendarNavProps {
   calendarRef: calendarRef;
@@ -53,6 +60,8 @@ interface CalendarNavProps {
   viewedDate: Date;
   searchMode?: boolean;
   searchComponent?: React.ReactNode;
+  eventTypeFilter?: string;
+  setEventTypeFilter?: (type: string) => void;
 }
 
 export default function CalendarNav({
@@ -61,7 +70,9 @@ export default function CalendarNav({
   end,
   viewedDate,
   searchMode,
-  searchComponent
+  searchComponent,
+  eventTypeFilter,
+  setEventTypeFilter
 }: CalendarNavProps) {
   const [currentView, setCurrentView] = useState('timeGridWeek');
 
@@ -313,12 +324,33 @@ export default function CalendarNav({
                 </TabsList>
               </Tabs>
             </div>
+            {/* Add event button  */}
+            <EventAddForm start={start} end={end} />
           </>
         )}
 
-        {/* Add event button  */}
+        {/* Event Type Filter */}
+        {searchMode && (
+          <Select
+            value={eventTypeFilter ?? '-'}
+            onValueChange={(val) => {
+              console.log('Event Type Filter:', val);
+              console.log('setEventTypeFilter:', setEventTypeFilter);
+              setEventTypeFilter && setEventTypeFilter(val);
+              console.log('Event Type Filter set to:', eventTypeFilter);
+            }}
+          >
+            <SelectTrigger className='w-28 text-xs md:text-sm'>
+              <SelectValue placeholder='種別で絞り込み' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='-'>すべて</SelectItem>
+              <SelectItem value='event'>予定</SelectItem>
+              <SelectItem value='training'>研修</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
-        <EventAddForm start={start} end={end} />
         {searchComponent && (
           <div className='flex items-center'>{searchComponent}</div>
         )}

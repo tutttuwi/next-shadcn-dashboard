@@ -146,7 +146,10 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#AEC6E4',
-    description: '本日のタスクを確認するための定例ミーティングです。'
+    description: '本日のタスクを確認するための定例ミーティングです。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '2',
@@ -166,7 +169,10 @@ export const initialEvents: CalendarEvent[] = [
       30
     ),
     backgroundColor: '#FFD1DC',
-    description: 'Cracker Barrel にて、統合クライアントとのランチです。'
+    description: 'Cracker Barrel にて、統合クライアントとのランチです。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '3',
@@ -186,7 +192,10 @@ export const initialEvents: CalendarEvent[] = [
       45
     ),
     backgroundColor: '#B2E0B2',
-    description: '進捗に関してカウンセラーと話し合います。'
+    description: '進捗に関してカウンセラーと話し合います。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '4',
@@ -206,7 +215,10 @@ export const initialEvents: CalendarEvent[] = [
       45
     ),
     backgroundColor: '#FFB3BA',
-    description: 'チームの絆を深め、戦略を計画するためのイベントです。'
+    description: 'チームの絆を深め、戦略を計画するためのイベントです。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '5',
@@ -226,7 +238,10 @@ export const initialEvents: CalendarEvent[] = [
       30
     ),
     backgroundColor: '#FFDFBA',
-    description: '効果的な時間管理のテクニックで生産性を向上させましょう。'
+    description: '効果的な時間管理のテクニックで生産性を向上させましょう。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '6',
@@ -247,7 +262,10 @@ export const initialEvents: CalendarEvent[] = [
     ),
     backgroundColor: '#B9FBC0',
     description:
-      '健康に関するリソースやウェルネスアクティビティを体験できます。'
+      '健康に関するリソースやウェルネスアクティビティを体験できます。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '7',
@@ -268,7 +286,10 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#C3B1E1',
-    description: '今月の選書について読書会メンバーと語り合います。'
+    description: '今月の選書について読書会メンバーと語り合います。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '8',
@@ -288,7 +309,10 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#B2E7E0',
-    description: '週末に開催される創作ライティングの演習に参加しましょう。'
+    description: '週末に開催される創作ライティングの演習に参加しましょう。',
+    extendedProps: {
+      eventType: 'event'
+    }
   },
   {
     id: '9',
@@ -308,6 +332,9 @@ export const initialEvents: CalendarEvent[] = [
       0
     ),
     backgroundColor: '#F6C9D8',
-    description: '良い目的のために資金を集める楽しい夜のイベントです。'
+    description: '良い目的のために資金を集める楽しい夜のイベントです。',
+    extendedProps: {
+      eventType: 'event'
+    }
   }
 ];

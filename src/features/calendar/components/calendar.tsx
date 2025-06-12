@@ -39,6 +39,7 @@ import {
   TableBody,
   TableCell
 } from '@/components/ui/table';
+import { Search } from 'lucide-react';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -69,13 +70,22 @@ export default function Calendar() {
   const [isDrag, setIsDrag] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searchMode, setSearchMode] = useState(false);
+  const [eventTypeFilter, setEventTypeFilter] = useState('-');
   const [filteredEvents, setFilteredEvents] = useState<CalendarEvent[]>([]);
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams =
     typeof window !== 'undefined'
       ? new URLSearchParams(window.location.search)
       : null;
   const idFromUrl = searchParams?.get('id');
+
+  useEffect(() => {
+    if (showSearchInput && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [showSearchInput]);
 
   // カレンダーイベントクリック時の処理
   // イベントの詳細を表示するために、選択されたイベントを設定
@@ -265,25 +275,36 @@ export default function Calendar() {
   const calendarLatestTime = `${latestHour}:${latestMin}`;
 
   // 検索処理
-  const handleSearch = () => {
+  // const handleSearch = () => {
+  //   if (searchText.trim() === '') {
+  //     setSearchMode(false);
+  //     setFilteredEvents([]);
+  //     return;
+  //   }
+  //   const filtered = events.filter(
+  //     (event) =>
+  //       // タイトルまたは説明に検索文字列が含まれる
+  //       (event.title?.includes(searchText) ||
+  //         event.description?.includes(searchText)) &&
+  //       // イベントタイプフィルタもAND条件で追加
+  //       (eventTypeFilter === '-' ||
+  //         event.extendedProps?.eventType === eventTypeFilter)
+  //   );
+  //   setFilteredEvents(filtered);
+  //   setSearchMode(true);
+  // };
+
+  // 入力ボックスのキーハンドラ
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // if (e.key === 'Enter') {
+    //   handleSearch();
+    // }
     if (searchText.trim() === '') {
       setSearchMode(false);
       setFilteredEvents([]);
       return;
-    }
-    const filtered = events.filter(
-      (event) =>
-        event.title?.includes(searchText) ||
-        event.description?.includes(searchText)
-    );
-    setFilteredEvents(filtered);
-    setSearchMode(true);
-  };
-
-  // 入力ボックスのキーハンドラ
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
+    } else {
+      setSearchMode(true);
     }
     if (e.key === 'Escape') {
       setSearchText('');
@@ -312,16 +333,55 @@ export default function Calendar() {
 
   // イベントが更新されたときに検索結果を更新
   // 検索モードのときにイベントが更新された場合、検索結果を再計算
+  // useEffect(() => {
+  //   if (searchMode && searchText.trim() !== '') {
+  //     const filtered = events.filter(
+  //       (event) =>
+  //         event.title?.includes(searchText) ||
+  //         event.description?.includes(searchText)
+  //     );
+  //     setFilteredEvents(filtered);
+  //   }
+  // }, [events]);
+
+  // イベントタイプフィルタの変更時
+  // useEffect(() => {
+  //   console.log('eventTypeFilter changed:', eventTypeFilter);
+  //   // setEventTypeFilter(eventTypeFilter);
+  //   const filtered =
+  //     eventTypeFilter === '-'
+  //       ? events
+  //       : events.filter(
+  //           (event) => event.extendedProps?.eventType === eventTypeFilter
+  //         );
+  //   console.log('Filtered events:', filtered);
+  //   setFilteredEvents(filtered);
+  // }, [eventTypeFilter, events]);
+
+  // 検索モード・イベントタイプフィルタ両方をAND条件で絞り込み
   useEffect(() => {
     if (searchMode && searchText.trim() !== '') {
       const filtered = events.filter(
         (event) =>
-          event.title?.includes(searchText) ||
-          event.description?.includes(searchText)
+          // タイトルまたは説明に検索文字列が含まれる
+          (event.title?.includes(searchText) ||
+            event.description?.includes(searchText)) &&
+          // イベントタイプフィルタ
+          (eventTypeFilter === '-' ||
+            event.extendedProps?.eventType === eventTypeFilter)
       );
       setFilteredEvents(filtered);
+    } else if (eventTypeFilter !== '-') {
+      // 検索モードでない場合はタイプフィルタのみ
+      const filtered = events.filter(
+        (event) => event.extendedProps?.eventType === eventTypeFilter
+      );
+      setFilteredEvents(filtered);
+    } else {
+      // どちらも指定なし
+      setFilteredEvents(events);
     }
-  }, [events]);
+  }, [events, searchMode, searchText, eventTypeFilter]);
 
   return (
     <div className='space-y-5'>
@@ -333,15 +393,32 @@ export default function Calendar() {
         searchMode={searchMode}
         searchComponent={
           <div className='mb-2 flex justify-end'>
-            <Input
-              className='w-80'
-              placeholder='予定を検索'
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              onKeyDown={handleInputKeyDown}
-            />
+            {showSearchInput ? (
+              <Input
+                ref={searchInputRef}
+                className='w-40'
+                placeholder='予定を検索'
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyDown={handleInputKeyDown}
+                onBlur={() => {
+                  if (!searchText) setShowSearchInput(false);
+                }}
+              />
+            ) : (
+              <button
+                type='button'
+                className='p-2 text-gray-500 hover:text-blue-600'
+                onClick={() => setShowSearchInput(true)}
+                aria-label='検索'
+              >
+                <Search className='h-5 w-5' />
+              </button>
+            )}
           </div>
         }
+        eventTypeFilter={eventTypeFilter}
+        setEventTypeFilter={setEventTypeFilter}
       />
 
       {/* 検索結果テーブル */}
