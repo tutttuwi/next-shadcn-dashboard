@@ -42,6 +42,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch'; // shadcn/uiのSwitchを想定
 import { CalendarEvent } from '../utils/data';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { memberCandidates } from '../utils/data';
 
 const eventAddFormSchema = z.object({
   title: z
@@ -87,100 +88,6 @@ interface EventAddFormProps {
   start: Date;
   end: Date;
 }
-
-// ダミーメンバー（日本人の名前・役職・階級で15人）
-const memberCandidates = [
-  {
-    email: 'sato@example.com',
-    name: '佐藤 太郎',
-    position: 'エンジニア',
-    rank: '主任'
-  },
-  {
-    email: 'suzuki@example.com',
-    name: '鈴木 花子',
-    position: 'デザイナー',
-    rank: '一般'
-  },
-  {
-    email: 'takahashi@example.com',
-    name: '高橋 健',
-    position: 'マネージャー',
-    rank: '課長'
-  },
-  {
-    email: 'tanaka@example.com',
-    name: '田中 美咲',
-    position: 'エンジニア',
-    rank: '一般'
-  },
-  {
-    email: 'watanabe@example.com',
-    name: '渡辺 一郎',
-    position: 'マーケター',
-    rank: '主任'
-  },
-  {
-    email: 'ito@example.com',
-    name: '伊藤 由紀',
-    position: 'エンジニア',
-    rank: '部長'
-  },
-  {
-    email: 'yamamoto@example.com',
-    name: '山本 大輔',
-    position: 'デザイナー',
-    rank: '主任'
-  },
-  {
-    email: 'nakamura@example.com',
-    name: '中村 さくら',
-    position: 'エンジニア',
-    rank: '一般'
-  },
-  {
-    email: 'kobayashi@example.com',
-    name: '小林 直樹',
-    position: 'マネージャー',
-    rank: '課長'
-  },
-  {
-    email: 'kato@example.com',
-    name: '加藤 未来',
-    position: 'マーケター',
-    rank: '一般'
-  },
-  {
-    email: 'yoshida@example.com',
-    name: '吉田 拓海',
-    position: 'エンジニア',
-    rank: '主任'
-  },
-  {
-    email: 'yamada@example.com',
-    name: '山田 彩',
-    position: 'デザイナー',
-    rank: '一般'
-  },
-  {
-    email: 'sasaki@example.com',
-    name: '佐々木 亮',
-    position: 'マネージャー',
-    rank: '部長'
-  },
-  {
-    email: 'yamaguchi@example.com',
-    name: '山口 直子',
-    position: 'エンジニア',
-    rank: '課長'
-  },
-  {
-    email: 'matsumoto@example.com',
-    name: '松本 剛',
-    position: 'マーケター',
-    rank: '主任'
-  }
-];
 
 export function EventAddForm({ start, end }: EventAddFormProps) {
   const { events, addEvent } = useEvents();

@@ -1,3 +1,4 @@
+import { s } from '@fullcalendar/core/internal-common';
 import FullCalendar from '@fullcalendar/react';
 import { RefObject } from 'react';
 
@@ -115,6 +116,137 @@ const getRandomDays = (min: number, max: number) =>
 
 const currentDate = new Date();
 
+// ダミーメンバー（日本人の名前・役職・階級で15人）
+export const memberCandidates = [
+  {
+    email: 'sato@example.com',
+    name: '佐藤 太郎',
+    position: 'エンジニア',
+    rank: '主任',
+    staffNo: 1
+  },
+  {
+    email: 'suzuki@example.com',
+    name: '鈴木 花子',
+    position: 'デザイナー',
+    rank: '一般',
+    staffNo: 2
+  },
+  {
+    email: 'takahashi@example.com',
+    name: '高橋 健',
+    position: 'マネージャー',
+    rank: '課長',
+    staffNo: 3
+  },
+  {
+    email: 'tanaka@example.com',
+    name: '田中 美咲',
+    position: 'エンジニア',
+    rank: '一般',
+    staffNo: 4
+  },
+  {
+    email: 'watanabe@example.com',
+    name: '渡辺 一郎',
+    position: 'マーケター',
+    rank: '主任',
+    staffNo: 5
+  },
+  {
+    email: 'ito@example.com',
+    name: '伊藤 由紀',
+    position: 'エンジニア',
+    rank: '部長',
+    staffNo: 6
+  },
+  {
+    email: 'yamamoto@example.com',
+    name: '山本 大輔',
+    position: 'デザイナー',
+    rank: '主任',
+    staffNo: 7
+  },
+  {
+    email: 'nakamura@example.com',
+    name: '中村 さくら',
+    position: 'エンジニア',
+    rank: '一般',
+    staffNo: 8
+  },
+  {
+    email: 'kobayashi@example.com',
+    name: '小林 直樹',
+    position: 'マネージャー',
+    rank: '課長',
+    staffNo: 9
+  },
+  {
+    email: 'kato@example.com',
+    name: '加藤 未来',
+    position: 'マーケター',
+    rank: '一般',
+    staffNo: 10
+  },
+  {
+    email: 'yoshida@example.com',
+    name: '吉田 拓海',
+    position: 'エンジニア',
+    rank: '主任',
+    staffNo: 11
+  },
+  {
+    email: 'yamada@example.com',
+    name: '山田 彩',
+    position: 'デザイナー',
+    rank: '一般',
+    staffNo: 12
+  },
+  {
+    email: 'sasaki@example.com',
+    name: '佐々木 亮',
+    position: 'マネージャー',
+    rank: '部長',
+    staffNo: 13
+  },
+  {
+    email: 'yamaguchi@example.com',
+    name: '山口 直子',
+    position: 'エンジニア',
+    rank: '課長',
+    staffNo: 14
+  },
+  {
+    email: 'matsumoto@example.com',
+    name: '松本 剛',
+    position: 'マーケター',
+    rank: '主任',
+    staffNo: 15
+  }
+];
+
+// メンバー候補からランダムにn人選ぶ関数
+function getRandomMembers(n: number, excludeStaffNos: number[] = []) {
+  // 除外リストを除いた候補
+  const candidates = memberCandidates.filter(
+    (m) => !excludeStaffNos.includes(m.staffNo)
+  );
+  // シャッフル
+  const shuffled = [...candidates].sort(() => 0.5 - Math.random());
+  // n人取得
+  return shuffled
+    .slice(0, n)
+    .map(({ staffNo, name, email, position, rank }) => ({
+      staffNo,
+      name,
+      email,
+      position,
+      rank
+    }));
+}
+
+const defaultColor = '#76c7ef'; // デフォルトの背景色
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -148,7 +280,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#AEC6E4',
     description: '本日のタスクを確認するための定例ミーティングです。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 1, name: '佐藤 太郎' },
+      members: getRandomMembers(3, [2])
     }
   },
   {
@@ -171,7 +305,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#FFD1DC',
     description: 'Cracker Barrel にて、統合クライアントとのランチです。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 2, name: '鈴木 花子' },
+      members: getRandomMembers(3, [2])
     }
   },
   {
@@ -194,7 +330,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#B2E0B2',
     description: '進捗に関してカウンセラーと話し合います。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 3, name: '高橋 健' },
+      members: getRandomMembers(2, [3])
     }
   },
   {
@@ -217,7 +355,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#FFB3BA',
     description: 'チームの絆を深め、戦略を計画するためのイベントです。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 4, name: '田中 美咲' },
+      members: getRandomMembers(4, [4])
     }
   },
   {
@@ -240,7 +380,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#FFDFBA',
     description: '効果的な時間管理のテクニックで生産性を向上させましょう。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 5, name: '渡辺 一郎' },
+      members: getRandomMembers(3, [5])
     }
   },
   {
@@ -264,7 +406,9 @@ export const initialEvents: CalendarEvent[] = [
     description:
       '健康に関するリソースやウェルネスアクティビティを体験できます。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 6, name: '伊藤 由紀' },
+      members: getRandomMembers(2, [6])
     }
   },
   {
@@ -288,7 +432,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#C3B1E1',
     description: '今月の選書について読書会メンバーと語り合います。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 7, name: '山本 大輔' },
+      members: getRandomMembers(5, [7])
     }
   },
   {
@@ -311,7 +457,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#B2E7E0',
     description: '週末に開催される創作ライティングの演習に参加しましょう。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 8, name: '中村 さくら' },
+      members: getRandomMembers(3, [8])
     }
   },
   {
@@ -334,7 +482,9 @@ export const initialEvents: CalendarEvent[] = [
     backgroundColor: '#F6C9D8',
     description: '良い目的のために資金を集める楽しい夜のイベントです。',
     extendedProps: {
-      eventType: 'event'
+      eventType: 'event',
+      owner: { staffNo: 9, name: '小林 直樹' },
+      members: getRandomMembers(4, [9])
     }
   }
 ];
