@@ -152,76 +152,6 @@ export const memberCandidates = [
     position: 'マーケター',
     rank: '主任',
     staffNo: 5
-  },
-  {
-    email: 'ito@example.com',
-    name: '伊藤 由紀',
-    position: 'エンジニア',
-    rank: '部長',
-    staffNo: 6
-  },
-  {
-    email: 'yamamoto@example.com',
-    name: '山本 大輔',
-    position: 'デザイナー',
-    rank: '主任',
-    staffNo: 7
-  },
-  {
-    email: 'nakamura@example.com',
-    name: '中村 さくら',
-    position: 'エンジニア',
-    rank: '一般',
-    staffNo: 8
-  },
-  {
-    email: 'kobayashi@example.com',
-    name: '小林 直樹',
-    position: 'マネージャー',
-    rank: '課長',
-    staffNo: 9
-  },
-  {
-    email: 'kato@example.com',
-    name: '加藤 未来',
-    position: 'マーケター',
-    rank: '一般',
-    staffNo: 10
-  },
-  {
-    email: 'yoshida@example.com',
-    name: '吉田 拓海',
-    position: 'エンジニア',
-    rank: '主任',
-    staffNo: 11
-  },
-  {
-    email: 'yamada@example.com',
-    name: '山田 彩',
-    position: 'デザイナー',
-    rank: '一般',
-    staffNo: 12
-  },
-  {
-    email: 'sasaki@example.com',
-    name: '佐々木 亮',
-    position: 'マネージャー',
-    rank: '部長',
-    staffNo: 13
-  },
-  {
-    email: 'yamaguchi@example.com',
-    name: '山口 直子',
-    position: 'エンジニア',
-    rank: '課長',
-    staffNo: 14
-  },
-  {
-    email: 'matsumoto@example.com',
-    name: '松本 剛',
-    position: 'マーケター',
-    rank: '主任',
-    staffNo: 15
   }
 ];
 
@@ -259,6 +189,11 @@ export interface CalendarEvent {
   extendedProps?: Record<string, any>;
 }
 
+/**
+ * 初期イベントデータ（自分の予定のみ定義）
+ * @description カレンダーの初期イベントデータを定義します。
+ * @returns CalendarEvent[] 初期イベントの配列
+ */
 export const initialEvents: CalendarEvent[] = [
   {
     id: '1',
@@ -306,7 +241,7 @@ export const initialEvents: CalendarEvent[] = [
     description: 'Cracker Barrel にて、統合クライアントとのランチです。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 2, name: '鈴木 花子' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(3, [2])
     }
   },
@@ -331,7 +266,7 @@ export const initialEvents: CalendarEvent[] = [
     description: '進捗に関してカウンセラーと話し合います。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 3, name: '高橋 健' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(2, [3])
     }
   },
@@ -356,7 +291,7 @@ export const initialEvents: CalendarEvent[] = [
     description: 'チームの絆を深め、戦略を計画するためのイベントです。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 4, name: '田中 美咲' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(4, [4])
     }
   },
@@ -381,7 +316,7 @@ export const initialEvents: CalendarEvent[] = [
     description: '効果的な時間管理のテクニックで生産性を向上させましょう。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 5, name: '渡辺 一郎' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(3, [5])
     }
   },
@@ -407,7 +342,7 @@ export const initialEvents: CalendarEvent[] = [
       '健康に関するリソースやウェルネスアクティビティを体験できます。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 6, name: '伊藤 由紀' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(2, [6])
     }
   },
@@ -433,7 +368,7 @@ export const initialEvents: CalendarEvent[] = [
     description: '今月の選書について読書会メンバーと語り合います。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 7, name: '山本 大輔' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(5, [7])
     }
   },
@@ -458,7 +393,7 @@ export const initialEvents: CalendarEvent[] = [
     description: '週末に開催される創作ライティングの演習に参加しましょう。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 8, name: '中村 さくら' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(3, [8])
     }
   },
@@ -483,8 +418,130 @@ export const initialEvents: CalendarEvent[] = [
     description: '良い目的のために資金を集める楽しい夜のイベントです。',
     extendedProps: {
       eventType: 'event',
-      owner: { staffNo: 9, name: '小林 直樹' },
+      owner: { staffNo: 1, name: '佐藤 太郎' },
       members: getRandomMembers(4, [9])
     }
   }
+];
+
+// 各メンバーごとのイベントを分けて定義
+export const suzukiEvents: CalendarEvent[] = [
+  {
+    id: 'suzuki-1',
+    title: 'デザインレビュー',
+    start: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 1,
+      14,
+      0
+    ),
+    end: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 1,
+      15,
+      0
+    ),
+    backgroundColor: '#FFD1DC',
+    description: '新規プロジェクトのデザインレビュー',
+    extendedProps: {
+      eventType: 'event',
+      owner: { staffNo: 2, name: '鈴木 花子' },
+      members: getRandomMembers(3, [2])
+    }
+  }
+];
+
+export const takahashiEvents: CalendarEvent[] = [
+  {
+    id: 'takahashi-1',
+    title: 'マネージャー会議',
+    start: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 2,
+      9,
+      0
+    ),
+    end: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 2,
+      10,
+      30
+    ),
+    backgroundColor: '#B2E0B2',
+    description: '部門マネージャーによる定例会議',
+    extendedProps: {
+      eventType: 'event',
+      owner: { staffNo: 3, name: '高橋 健' },
+      members: getRandomMembers(2, [3])
+    }
+  }
+];
+
+export const tanakaEvents: CalendarEvent[] = [
+  {
+    id: 'tanaka-1',
+    title: 'コードレビュー',
+    start: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 3,
+      16,
+      0
+    ),
+    end: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 3,
+      17,
+      0
+    ),
+    backgroundColor: '#FFB3BA',
+    description: 'チームメンバーのコードレビュー',
+    extendedProps: {
+      eventType: 'event',
+      owner: { staffNo: 4, name: '田中 美咲' },
+      members: getRandomMembers(2, [4])
+    }
+  }
+];
+
+export const watanabeEvents: CalendarEvent[] = [
+  {
+    id: 'watanabe-1',
+    title: 'マーケティング戦略会議',
+    start: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 4,
+      11,
+      0
+    ),
+    end: new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + 4,
+      12,
+      0
+    ),
+    backgroundColor: '#FFDFBA',
+    description: '新商品のマーケティング戦略を検討',
+    extendedProps: {
+      eventType: 'event',
+      owner: { staffNo: 5, name: '渡辺 一郎' },
+      members: getRandomMembers(3, [5])
+    }
+  }
+];
+
+// 既存の各メンバーイベント配列をまとめて1つの配列にマージ
+export const allMemberEvents: CalendarEvent[] = [
+  ...initialEvents,
+  ...suzukiEvents,
+  ...takahashiEvents,
+  ...tanakaEvents,
+  ...watanabeEvents
 ];
