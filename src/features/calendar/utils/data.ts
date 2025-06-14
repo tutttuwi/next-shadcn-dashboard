@@ -715,3 +715,14 @@ export const allMemberEvents: CalendarEvent[] = [
 ];
 
 export const myStaffNo = 1; // TODO: セッション情報などから取得して設定する
+
+export const colorOptions = [
+  '#CFEAFE', // 淡い青（旧 #76c7ef の淡色） 淡い青（旧 #76c7ef の淡色）
+  '#FDE2E1', // 淡い赤（旧 #f87171 の淡色） // 淡い赤（旧 #f87171 の淡色）
+  '#D1FAE5', // 淡い緑（旧 #34d399 の淡色） // 淡い緑（旧 #34d399 の淡色）
+  '#FEF9C3', // 淡い黄（旧 #fbbf24 の淡色） // 淡い黄（旧 #fbbf24 の淡色）
+  '#E9D5FF', // 淡い紫（旧 #a78bfa の淡色）, // 淡い紫（旧 #a78bfa の淡色）
+  '#FFE4F0', // 追加：淡いピンク'#FFE4F0', // 追加：淡いピンク
+  '#D1D5FF', // 追加：淡いブルーグレー  '#D1D5FF', // 追加：淡いブルーグレー
+  '#D9F5FF' // 追加：淡いシアン  '#FDF6E3', // 追加：淡いクリーム  '#FDF6E3', // 追加：淡いクリーム
+];

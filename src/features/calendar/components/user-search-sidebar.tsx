@@ -2,6 +2,11 @@ import { useState } from 'react';
 import { Input } from '@/features/calendar/components/ui/input';
 import { X } from 'lucide-react';
 import { Member, memberCandidates } from '@/features/calendar/utils/data';
+import {
+  colorOptions,
+  initialEvents,
+  myStaffNo
+} from '@/features/calendar/utils/data'; // colorOptionsをimport
 import { EventAddForm } from './event-add-form';
 import { Calendar } from '@/features/calendar/components/ui/calendar';
 import { ja } from 'date-fns/locale';
@@ -17,25 +22,69 @@ export function UserSearchSidebar({
   selectedUsers,
   setSelectedUsers,
   start,
-  end
-}: UserSearchSidebarProps) {
+  end,
+  setUserEvents // 追加: カレンダー側でuseStateして渡す
+}: UserSearchSidebarProps & { setUserEvents: (events: any[]) => void }) {
   const [input, setInput] = useState('');
   const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(start);
 
-  const filteredCandidates = memberCandidates.filter(
-    (member) =>
-      (member.name.includes(input) || member.email.includes(input)) &&
-      !selectedUsers.some((u) => u.email === member.email)
-  );
+  // 色割り当て: indexで循環
+  const getUserColor = (idx: number) => colorOptions[idx % colorOptions.length];
 
-  const handleSelect = (member: (typeof memberCandidates)[number]) => {
-    setSelectedUsers((prev) => [...prev, member]);
+  // 検索候補
+  const filteredCandidates = memberCandidates
+    .filter(
+      (member) =>
+        (member.name.includes(input) || member.email.includes(input)) &&
+        !selectedUsers.some((u) => u.email === member.email) &&
+        member.staffNo !== myStaffNo // 自分は候補から除外
+    )
+    .map((member, idx) => ({
+      ...member,
+      color: getUserColor(idx)
+    }));
+
+  // ユーザー選択時
+  const handleSelect = (member: Member) => {
+    // 色を割り当て
+    const idx = selectedUsers.length;
+    const color = getUserColor(idx);
+
+    setSelectedUsers((prev) => [...prev, { ...member, color }]);
     setInput('');
+
+    // initialEventsから該当ユーザーのイベントを抽出し色を上書き
+    const userEvents = initialEvents
+      .filter(
+        (event) =>
+          event.extendedProps?.owner?.email === member.email ||
+          (event.extendedProps?.members ?? []).some(
+            (m: any) => m.email === member.email
+          )
+      )
+      .map((event) => ({
+        ...event,
+        id: String(event.id + member.staffNo), // ユニークIDを確保
+        color,
+        backgroundColor: color
+      }));
+
+    setUserEvents((prev: any[]) => [...prev, ...userEvents]);
   };
 
+  // ユーザー削除時
   const handleRemove = (email: string) => {
     setSelectedUsers((prev) => prev.filter((u) => u.email !== email));
+    setUserEvents((prev: any[]) =>
+      prev.filter(
+        (event) =>
+          event.extendedProps?.owner?.email !== email &&
+          !(event.extendedProps?.members ?? []).some(
+            (m: any) => m.email === email
+          )
+      )
+    );
   };
 
   return (
@@ -71,18 +120,19 @@ export function UserSearchSidebar({
       />
       {input && filteredCandidates.length > 0 && (
         <ul className='mb-2 max-h-40 overflow-auto rounded border shadow'>
-          {filteredCandidates.map((member) => (
+          {filteredCandidates.map((member, idx) => (
             <li
               key={member.email}
               className='cursor-pointer px-2 py-2 hover:bg-blue-50'
+              // style={{ backgroundColor: member.color }}
               onClick={() => handleSelect(member)}
             >
               <div className='flex flex-col'>
                 <span className='font-xs'>{member.name}</span>
                 <span className='text-xs text-gray-600'>{member.email}</span>
-                <span className='text-xs'>
+                {/* <span className='text-xs'>
                   {member.position} / {member.rank}
-                </span>
+                </span> */}
               </div>
             </li>
           ))}
@@ -91,6 +141,7 @@ export function UserSearchSidebar({
       <div className='mt-2 space-y-2'>
         {selectedUsers.map((user) => (
           <div
+            style={{ backgroundColor: user.color }}
             key={user.email}
             className='relative flex items-center justify-between rounded bg-blue-50 px-3 py-1'
             onMouseEnter={() => setHoveredEmail(user.email)}

@@ -79,6 +79,7 @@ export default function Calendar() {
   const [showSearchInput, setShowSearchInput] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true); // サイドバー開閉用
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [userEvents, setUserEvents] = useState<any[]>([]);
 
   const searchParams =
     typeof window !== 'undefined'
@@ -439,6 +440,7 @@ export default function Calendar() {
           setSelectedUsers={setSelectedUsers}
           start={selectedStart}
           end={selectedEnd}
+          setUserEvents={setUserEvents}
         />
       )}
 
@@ -594,7 +596,7 @@ export default function Calendar() {
                   scrollTime='08:00:00'
                   displayEventEnd={true}
                   windowResizeDelay={0}
-                  events={events}
+                  events={[...events, ...userEvents]}
                   slotLabelFormat={{
                     hour: 'numeric',
                     minute: '2-digit'
