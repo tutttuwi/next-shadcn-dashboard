@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/table';
 import { Search, Menu, Triangle } from 'lucide-react'; // 追加
 import { Button } from '@/components/ui/button';
-import { UserSearchSidebar } from './UserSearchSidebar';
+import { UserSearchSidebar } from './user-search-sidebar';
 
 type EventItemProps = {
   info: EventContentArg;
