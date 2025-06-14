@@ -467,7 +467,7 @@ export default function Calendar() {
                 ) : (
                   <Button
                     type='button'
-                    className='p-2 text-gray-500 hover:text-blue-600'
+                    className='bg-white p-2 text-gray-500 hover:text-blue-600'
                     onClick={() => setShowSearchInput(true)}
                     aria-label='検索'
                   >

@@ -17,6 +17,7 @@ import {
 import { useState } from 'react';
 import {
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronsUpDown,
@@ -37,6 +38,12 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/features/calendar/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 import { Input } from '@/features/calendar/components/ui/input';
 import {
@@ -87,7 +94,7 @@ export default function CalendarNav({
   const [monthSelectOpen, setMonthSelectOpen] = useState(false);
 
   return (
-    <div className='flex min-w-full flex-wrap justify-center gap-3 px-10'>
+    <div className='flex min-w-full flex-wrap justify-between gap-3 px-10'>
       <div className='flex flex-row space-x-1'>
         {/* Navigate to previous date interval */}
 
@@ -102,6 +109,18 @@ export default function CalendarNav({
                 }}
               >
                 <ChevronLeft className='h-4 w-4' />
+              </Button>
+
+              {/* Navigate to next date interval */}
+
+              <Button
+                variant='ghost'
+                className='w-8'
+                onClick={() => {
+                  goNext(calendarRef);
+                }}
+              >
+                <ChevronRight className='h-4 w-4' />
               </Button>
 
               {/* Year Lookup */}
@@ -229,21 +248,9 @@ export default function CalendarNav({
                   </PopoverContent>
                 </Popover>
               )}
-
-              {/* Navigate to next date interval */}
-
-              <Button
-                variant='ghost'
-                className='w-8'
-                onClick={() => {
-                  goNext(calendarRef);
-                }}
-              >
-                <ChevronRight className='h-4 w-4' />
-              </Button>
             </div>
 
-            <div className='flex flex-wrap justify-center gap-3'>
+            <div className='flex flex-wrap items-start justify-center gap-3'>
               {/* Button to go to current date */}
 
               <Button
@@ -271,64 +278,60 @@ export default function CalendarNav({
                         : null
                 }
               </Button>
-
-              {/* Change view with tabs */}
-
-              <Tabs defaultValue='timeGridWeek'>
-                <TabsList className='flex w-44 md:w-64'>
-                  <TabsTrigger
-                    value='timeGridDay'
-                    onClick={() =>
-                      setView(calendarRef, 'timeGridDay', setCurrentView)
-                    }
-                    className={`space-x-1 ${
-                      currentView === 'timeGridDay' ? 'w-1/2' : 'w-1/4'
-                    }`}
-                  >
-                    <GalleryVertical className='h-5 w-5' />
-                    {currentView === 'timeGridDay' && (
-                      // <p className='text-xs md:text-sm'>Day</p>
-                      <p className='text-xs md:text-sm'>日</p>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value='timeGridWeek'
-                    onClick={() =>
-                      setView(calendarRef, 'timeGridWeek', setCurrentView)
-                    }
-                    className={`space-x-1 ${
-                      currentView === 'timeGridWeek' ? 'w-1/2' : 'w-1/4'
-                    }`}
-                  >
-                    <Tally3 className='h-5 w-5' />
-                    {currentView === 'timeGridWeek' && (
-                      // <p className='text-xs md:text-sm'>Week</p>
-                      <p className='text-xs md:text-sm'>週</p>
-                    )}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value='dayGridMonth'
-                    onClick={() =>
-                      setView(calendarRef, 'dayGridMonth', setCurrentView)
-                    }
-                    className={`space-x-1 ${
-                      currentView === 'dayGridMonth' ? 'w-1/2' : 'w-1/4'
-                    }`}
-                  >
-                    <Table className='h-5 w-5 rotate-90' />
-                    {currentView === 'dayGridMonth' && (
-                      // <p className='text-xs md:text-sm'>Month</p>
-                      <p className='text-xs md:text-sm'>月</p>
-                    )}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
             </div>
             {/* Add event button  */}
             {/* <EventAddForm start={start} end={end} /> */}
           </>
         )}
+      </div>
 
+      <div className='flex flex-row items-start space-x-1'>
+        {!searchMode && (
+          <div className='flex items-center'>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='outline'
+                  className='flex w-24 items-center justify-between text-xs md:text-sm'
+                >
+                  <span>
+                    {currentView === 'dayGridMonth'
+                      ? '月'
+                      : currentView === 'timeGridWeek'
+                        ? '週'
+                        : currentView === 'timeGridDay'
+                          ? '日'
+                          : ''}
+                  </span>
+                  <ChevronDown className='ml-2 h-4 w-4' />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='start'>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setView(calendarRef, 'dayGridMonth', setCurrentView);
+                  }}
+                >
+                  月
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setView(calendarRef, 'timeGridWeek', setCurrentView);
+                  }}
+                >
+                  週
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setView(calendarRef, 'timeGridDay', setCurrentView);
+                  }}
+                >
+                  日
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
         {/* Event Type Filter */}
         {searchMode && (
           <Select
