@@ -18,9 +18,7 @@ export function UserSearchSidebar({
   end
 }: UserSearchSidebarProps) {
   const [input, setInput] = useState('');
-  // const [selectedUsers, setSelectedUsers] = useState<typeof memberCandidates>(
-  //   []
-  // );
+  const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
   const filteredCandidates = memberCandidates.filter(
     (member) =>
       (member.name.includes(input) || member.email.includes(input)) &&
@@ -37,7 +35,7 @@ export function UserSearchSidebar({
   };
 
   return (
-    <div className='flex h-full w-64 flex-col border-r bg-white p-4'>
+    <div className='h-vh mr-2 flex w-64 flex-col border-r p-4'>
       {/* Add event button  */}
       <EventAddForm start={start} end={end} />
       <hr className='my-3' />
@@ -49,7 +47,7 @@ export function UserSearchSidebar({
         className='mb-2'
       />
       {input && filteredCandidates.length > 0 && (
-        <ul className='mb-2 max-h-40 overflow-auto rounded border bg-white shadow'>
+        <ul className='mb-2 max-h-40 overflow-auto rounded border shadow'>
           {filteredCandidates.map((member) => (
             <li
               key={member.email}
@@ -57,7 +55,7 @@ export function UserSearchSidebar({
               onClick={() => handleSelect(member)}
             >
               <div className='flex flex-col'>
-                <span className='font-semibold'>{member.name}</span>
+                <span className='font-xs'>{member.name}</span>
                 <span className='text-xs text-gray-600'>{member.email}</span>
                 <span className='text-xs'>
                   {member.position} / {member.rank}
@@ -71,14 +69,12 @@ export function UserSearchSidebar({
         {selectedUsers.map((user) => (
           <div
             key={user.email}
-            className='flex items-center justify-between rounded bg-blue-50 px-3 py-2'
+            className='relative flex items-center justify-between rounded bg-blue-50 px-3 py-1'
+            onMouseEnter={() => setHoveredEmail(user.email)}
+            onMouseLeave={() => setHoveredEmail(null)}
           >
             <div>
-              <span className='font-semibold'>{user.name}</span>
-              <span className='ml-2 text-xs text-gray-600'>{user.email}</span>
-              <span className='ml-2 text-xs'>
-                {user.position} / {user.rank}
-              </span>
+              <span className='text-xs'>{user.name}</span>
             </div>
             <button
               className='ml-2 text-gray-400 hover:text-red-500'
@@ -87,6 +83,17 @@ export function UserSearchSidebar({
             >
               <X className='h-4 w-4' />
             </button>
+            {/* ホバー時に詳細表示 */}
+            {hoveredEmail === user.email && (
+              <div className='absolute top-1 left-full z-10 ml-2 w-56 rounded border bg-white p-3 text-xs shadow-lg'>
+                <div className='font-bold'>{user.name}</div>
+                <div className='text-gray-600'>{user.email}</div>
+                <div>
+                  {user.position} / {user.rank}
+                </div>
+                <div>スタッフNo: {user.staffNo}</div>
+              </div>
+            )}
           </div>
         ))}
       </div>

@@ -422,7 +422,7 @@ export default function Calendar() {
       )}
 
       {/* サイドバー開閉トグルボタン */}
-      <Button
+      {/* <Button
         className={`z-20 h-10 w-10 rounded bg-white p-2 shadow hover:bg-gray-100 ${
           sidebarOpen ? '' : ''
         }`}
@@ -439,7 +439,7 @@ export default function Calendar() {
         ) : (
           <Triangle className='h-5 w-5 rotate-90' />
         )}
-      </Button>
+      </Button> */}
 
       {/* メインカレンダー領域 */}
       <div className='flex-1 pl-0'>
