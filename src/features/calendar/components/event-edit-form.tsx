@@ -166,6 +166,7 @@ export function EventEditForm({
       end: data.end,
       allDay: data.allDay,
       extendedProps: {
+        owner: event?.extendedProps?.owner, // owner情報もセット
         members: selectedMembers,
         backgroundColor: data.color,
         color: data.color,
@@ -199,11 +200,14 @@ export function EventEditForm({
         member.name.includes(memberInput) ||
         member.position.includes(memberInput) ||
         member.rank.includes(memberInput)) &&
-      !selectedMembers.some((m) => m.email === member.email)
+      !selectedMembers.some((m) => m.email === member.email) &&
+      member.email !== event?.extendedProps?.owner?.email // owner（主催者）は候補から除外
   );
 
   // メンバー追加
   const handleAddMember = (member: (typeof memberCandidates)[number]) => {
+    // owner（主催者）はmembersに追加できないようにガード
+    if (member.email === event?.extendedProps?.owner?.email) return;
     setSelectedMembers((prev) => [...prev, member]);
     setMemberInput('');
   };
@@ -492,6 +496,21 @@ export function EventEditForm({
                     <FormItem>
                       <FormControl>
                         <div>
+                          {/* owner（主催者）を最初に表示 */}
+                          {event?.extendedProps?.owner && (
+                            <div className='mb-2 flex w-full flex-row items-center gap-2 rounded bg-yellow-50 px-3 py-2'>
+                              <span className='font-semibold'>
+                                {event.extendedProps.owner.name}
+                              </span>
+                              <span className='ml-1 rounded bg-yellow-200 px-2 py-0.5 text-xs text-yellow-800'>
+                                主催者
+                              </span>
+                              <span className='text-xs'>
+                                {event.extendedProps.owner.position} /{' '}
+                                {event.extendedProps.owner.rank}
+                              </span>
+                            </div>
+                          )}
                           <div className='mb-1 flex items-center gap-2'>
                             <div className='relative flex-1'>
                               <Input

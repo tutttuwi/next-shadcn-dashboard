@@ -117,9 +117,25 @@ export function EventView({ event }: EventViewProps) {
               <div className='w-full flex-shrink-0 md:w-1/3'>
                 <div className='mb-1 text-xs text-gray-500'>ゲスト</div>
                 <div className='flex max-h-48 flex-col gap-2 overflow-y-auto'>
+                  {/* owner（主催者）を最初に表示 */}
+                  {event?.extendedProps?.owner && (
+                    <div className='flex w-full flex-row items-center gap-3 rounded bg-yellow-50 px-3 py-2'>
+                      <span className='font-semibold'>
+                        {event.extendedProps.owner.name}
+                      </span>
+                      <span className='ml-1 rounded bg-yellow-200 px-2 py-0.5 text-xs text-yellow-800'>
+                        主催者
+                      </span>
+                      <span className='text-xs'>
+                        {event.extendedProps.owner.position} /{' '}
+                        {event.extendedProps.owner.rank}
+                      </span>
+                    </div>
+                  )}
+                  {/* members（ゲスト）を表示 */}
                   {event?.extendedProps?.members &&
-                  event.extendedProps?.members.length > 0 ? (
-                    event.extendedProps?.members.map((member: any) => (
+                  event.extendedProps.members.length > 0 ? (
+                    event.extendedProps.members.map((member: any) => (
                       <div
                         key={member.email}
                         className='flex w-full flex-row items-center gap-3 rounded bg-blue-50 px-3 py-2'
@@ -131,7 +147,8 @@ export function EventView({ event }: EventViewProps) {
                       </div>
                     ))
                   ) : (
-                    <span className='text-xs text-gray-400'>ゲストなし</span>
+                    // <span className='text-xs text-gray-400'>ゲストなし</span>
+                    <></>
                   )}
                 </div>
               </div>

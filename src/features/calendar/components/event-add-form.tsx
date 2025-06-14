@@ -42,7 +42,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch'; // shadcn/uiのSwitchを想定
 import { CalendarEvent } from '../utils/data';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { memberCandidates } from '../utils/data';
+import { myStaffNo, memberCandidates } from '../utils/data'; // myStaffNoを用意している場合
 
 const eventAddFormSchema = z.object({
   title: z
@@ -107,6 +107,10 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   const [showGuestList, setShowGuestList] = useState(true);
   const [eventType, setEventType] = useState<'event' | 'training'>('event');
   const [assignmentFiles, setAssignmentFiles] = useState<File[]>([]);
+  const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
+
+  // 自分の情報を取得
+  const myInfo = memberCandidates.find((m) => m.staffNo === myStaffNo);
 
   // 候補のフィルタリングもオブジェクトで
   const filteredCandidates = memberCandidates.filter(
@@ -115,7 +119,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
         member.name.includes(memberInput) ||
         member.position.includes(memberInput) ||
         member.rank.includes(memberInput)) &&
-      !selectedMembers.some((m) => m.email === member.email)
+      !selectedMembers.some((m) => m.email === member.email) &&
+      member.email !== myInfo?.email // owner（自分）は候補から除外
   );
 
   /**
@@ -139,7 +144,6 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
   }, [form, start, end]);
 
   async function onSubmit(data: EventAddFormValues) {
-    console.log('EventAddForm onSubmit', data);
     const newEvent = {
       id: String(events.length + 1),
       title: data.title,
@@ -148,6 +152,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
       end: data.end,
       allDay: data.allDay,
       extendedProps: {
+        owner: myInfo, // ← ここでownerとして自分を保存
         members: selectedMembers,
         backgroundColor: data.color,
         color: data.color,
@@ -173,6 +178,8 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
 
   // メンバー追加時はオブジェクトを追加
   const handleAddMember = (member: (typeof memberCandidates)[number]) => {
+    // owner（自分）はmembersに追加できないようにガード
+    if (member.email === myInfo?.email) return;
     setSelectedMembers((prev) => [...prev, member]);
     setMemberInput('');
   };
@@ -471,7 +478,7 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                 <div className='mb-2'>
                   <AlertDialogAction
                     type='submit'
-                    className='w-auto rounded bg-blue-600 px-6 py-2 text-sm font-semibold text-white hover:bg-blue-700'
+                    className='bg-primary w-auto rounded px-6 py-2 text-sm'
                   >
                     登録
                   </AlertDialogAction>
@@ -484,6 +491,20 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                     <FormItem>
                       <FormControl>
                         <div>
+                          {/* オーナー（自分）を最初に表示 */}
+                          {myInfo && (
+                            <div className='mb-2 flex w-full flex-row items-center gap-2 rounded bg-yellow-50 px-3 py-2'>
+                              <span className='font-semibold'>
+                                {myInfo.name}
+                              </span>
+                              <span className='ml-1 rounded bg-yellow-200 px-2 py-0.5 text-xs text-yellow-800'>
+                                主催者
+                              </span>
+                              <span className='text-xs'>
+                                {myInfo.position} / {myInfo.rank}
+                              </span>
+                            </div>
+                          )}
                           <div className='mb-1 flex items-center gap-2'>
                             <div className='relative flex-1'>
                               <Input
@@ -538,7 +559,11 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                               {selectedMembers.map((member) => (
                                 <div
                                   key={member.email}
-                                  className='flex w-full items-center justify-between rounded bg-blue-50 px-3 py-2'
+                                  className='relative flex w-full items-center justify-between rounded bg-blue-50 px-3 py-2'
+                                  onMouseEnter={() =>
+                                    setHoveredEmail(member.email)
+                                  }
+                                  onMouseLeave={() => setHoveredEmail(null)}
                                 >
                                   <div className='flex w-full flex-row items-center gap-2'>
                                     <span className='text-xs'>
@@ -547,9 +572,9 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                                     <span className='text-xs text-gray-600'>
                                       {member.email}
                                     </span>
-                                    <span className='text-xs'>
+                                    {/* <span className='text-xs'>
                                       {member.position} / {member.rank}
-                                    </span>
+                                    </span> */}
                                   </div>
                                   <button
                                     type='button'
@@ -564,6 +589,22 @@ export function EventAddForm({ start, end }: EventAddFormProps) {
                                   >
                                     <X className='h-5 w-5' />
                                   </button>
+                                  {/* ホバー時に詳細情報を表示 */}
+                                  {/* Zindexが勝てないため表示できない、要調査 */}
+                                  {/* {hoveredEmail === member.email && (
+                                    <div className='absolute top-0 left-full z-10000 ml-2 w-56 rounded border bg-white p-3 text-xs shadow-lg'>
+                                      <div className='font-bold'>
+                                        {member.name}
+                                      </div>
+                                      <div className='text-gray-600'>
+                                        {member.email}
+                                      </div>
+                                      <div>
+                                        {member.position} / {member.rank}
+                                      </div>
+                                      <div>スタッフNo: {member.staffNo}</div>
+                                    </div>
+                                  )} */}
                                 </div>
                               ))}
                             </div>
