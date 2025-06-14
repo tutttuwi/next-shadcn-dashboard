@@ -10,6 +10,7 @@ import {
 import { EventAddForm } from './event-add-form';
 import { Calendar } from '@/features/calendar/components/ui/calendar';
 import { ja } from 'date-fns/locale';
+import { useEvents } from '@/features/calendar/context/events-context';
 
 interface UserSearchSidebarProps {
   selectedUsers: Member[];
@@ -28,6 +29,7 @@ export function UserSearchSidebar({
   const [input, setInput] = useState('');
   const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(start);
+  const { events } = useEvents(); // カレンダーのイベントを取得
 
   // 色割り当て: indexで循環
   const getUserColor = (idx: number) => colorOptions[idx % colorOptions.length];
@@ -54,8 +56,8 @@ export function UserSearchSidebar({
     setSelectedUsers((prev) => [...prev, { ...member, color }]);
     setInput('');
 
-    // initialEventsから該当ユーザーのイベントを抽出し色を上書き
-    const userEvents = initialEvents
+    // eventsから該当ユーザーのイベントを抽出し色を上書き
+    const userEvents = events
       .filter(
         (event) =>
           event.extendedProps?.owner?.email === member.email ||
