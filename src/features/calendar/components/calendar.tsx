@@ -409,6 +409,27 @@ export default function Calendar() {
     return isOwner || isMember;
   });
 
+  useEffect(() => {
+    const handler = (e: any) => {
+      const date: Date = e.detail.date;
+      const calendarApi = calendarRef.current?.getApi();
+      if (!calendarApi) return;
+      const view = calendarApi.view.type;
+      if (view === 'dayGridMonth') {
+        // 月表示: 選択月へ
+        calendarApi.gotoDate(date);
+      } else if (view === 'timeGridWeek' || view === 'dayGridWeek') {
+        // 週表示: 選択週へ
+        calendarApi.gotoDate(date);
+      } else if (view === 'timeGridDay' || view === 'dayGridDay') {
+        // 日表示: 選択日へ
+        calendarApi.gotoDate(date);
+      }
+    };
+    window.addEventListener('sidebar-calendar-select', handler);
+    return () => window.removeEventListener('sidebar-calendar-select', handler);
+  }, []);
+
   return (
     <div className='flex h-full'>
       {/* サイドバー */}

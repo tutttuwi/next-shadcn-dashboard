@@ -3,6 +3,8 @@ import { Input } from '@/features/calendar/components/ui/input';
 import { X } from 'lucide-react';
 import { Member, memberCandidates } from '@/features/calendar/utils/data';
 import { EventAddForm } from './event-add-form';
+import { Calendar } from '@/features/calendar/components/ui/calendar';
+import { ja } from 'date-fns/locale';
 
 interface UserSearchSidebarProps {
   selectedUsers: Member[];
@@ -19,6 +21,8 @@ export function UserSearchSidebar({
 }: UserSearchSidebarProps) {
   const [input, setInput] = useState('');
   const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(start);
+
   const filteredCandidates = memberCandidates.filter(
     (member) =>
       (member.name.includes(input) || member.email.includes(input)) &&
@@ -35,9 +39,28 @@ export function UserSearchSidebar({
   };
 
   return (
-    <div className='h-vh mr-2 flex w-64 flex-col border-r p-4'>
+    <div className='h-vh mr-2 flex w-auto flex-col border-r p-4'>
       {/* Add event button  */}
       <EventAddForm start={start} end={end} />
+      <hr className='my-3' />
+      {/* ここにShadcnuiのカレンダーを表示 */}
+      <div className='mb-3'>
+        <Calendar
+          mode='single'
+          selected={selectedDate}
+          locale={ja} // ここを追加
+          onSelect={(date) => {
+            if (!date) return;
+            setSelectedDate(date); // ここで選択日を更新
+            // FullCalendarの表示切替
+            // window.dispatchEventでカレンダーに通知
+            window.dispatchEvent(
+              new CustomEvent('sidebar-calendar-select', { detail: { date } })
+            );
+          }}
+          className='rounded-md border shadow-md'
+        />
+      </div>
       <hr className='my-3' />
       <div className='mb-2 text-lg font-bold'>ユーザー検索</div>
       <Input
