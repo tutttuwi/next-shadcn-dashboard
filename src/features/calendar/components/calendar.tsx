@@ -20,9 +20,11 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import { useRef, useState, useEffect } from 'react';
 import CalendarNav from './calendar-nav';
 import {
+  allMemberEvents,
   CalendarEvent,
   earliestTime,
-  latestTime
+  latestTime,
+  Member
 } from '@/features/calendar/utils/data';
 import { getDateFromMinutes } from '@/features/calendar/lib/utils';
 import { Card } from './ui/card';
@@ -39,8 +41,9 @@ import {
   TableBody,
   TableCell
 } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Search, Menu, Triangle } from 'lucide-react'; // 追加
 import { Button } from '@/components/ui/button';
+import { UserSearchSidebar } from './UserSearchSidebar';
 
 type EventItemProps = {
   info: EventContentArg;
@@ -74,6 +77,7 @@ export default function Calendar() {
   const [eventTypeFilter, setEventTypeFilter] = useState('-');
   const [filteredEvents, setFilteredEvents] = useState<CalendarEvent[]>([]);
   const [showSearchInput, setShowSearchInput] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // サイドバー開閉用
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams =
@@ -384,174 +388,232 @@ export default function Calendar() {
     }
   }, [events, searchMode, searchText, eventTypeFilter]);
 
+  // 例: 選択されたメンバー配列
+  const [selectedUsers, setSelectedUsers] = useState<Member[]>([]); // MemberTypeはmemberCandidatesの型
+
+  // 選択されたstaffNo一覧
+  const selectedStaffNos = selectedUsers.map((u) => u.staffNo);
+
+  // イベントフィルタ
+  const filteredUserEvents = allMemberEvents.filter((event) => {
+    // 自分のカレンダーは常に表示
+    const targetStaffNos = [...selectedStaffNos, 1];
+    // ownerが含まれる
+    const isOwner = targetStaffNos.includes(
+      event.extendedProps?.owner?.staffNo
+    );
+    // membersに含まれる
+    const isMember = (event.extendedProps?.members || []).some((m: any) =>
+      targetStaffNos.includes(m.staffNo)
+    );
+    return isOwner || isMember;
+  });
+
   return (
-    <div className='space-y-5'>
-      <CalendarNav
-        calendarRef={calendarRef}
-        start={selectedStart}
-        end={selectedEnd}
-        viewedDate={viewedDate}
-        searchMode={searchMode}
-        searchComponent={
-          <div className='mb-2 flex justify-end'>
-            {showSearchInput ? (
-              <Input
-                ref={searchInputRef}
-                className='w-40'
-                placeholder='予定を検索'
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={handleInputKeyDown}
-                onBlur={() => {
-                  if (!searchText) setShowSearchInput(false);
-                }}
-              />
-            ) : (
-              <Button
-                type='button'
-                className='p-2 text-gray-500 hover:text-blue-600'
-                onClick={() => setShowSearchInput(true)}
-                aria-label='検索'
-              >
-                <Search className='h-5 w-5' />
-              </Button>
-            )}
-          </div>
-        }
-        eventTypeFilter={eventTypeFilter}
-        setEventTypeFilter={setEventTypeFilter}
-      />
-
-      {/* 検索結果テーブル */}
-      {searchMode ? (
-        <div className='overflow-x-auto'>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>種別</TableHead>
-                <TableHead>タイトル</TableHead>
-                <TableHead>開始</TableHead>
-                <TableHead>終了</TableHead>
-                <TableHead className='w-1/3 truncate'>説明</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredEvents.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className='py-2 text-center'>
-                    該当する予定がありません
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredEvents.map((event) => (
-                  <TableRow
-                    key={event.id}
-                    className='cursor-pointer hover:bg-blue-50'
-                    onClick={() => handleSearchEventClick(event)}
-                  >
-                    {/* 種別列 */}
-                    <TableCell>
-                      {event.extendedProps?.eventType === 'training' ? (
-                        <span
-                          className='rounded-full px-3 py-1 text-xs font-medium'
-                          style={{
-                            backgroundColor: event.backgroundColor ?? '#bfdbfe',
-                            color: '#1e40af'
-                          }}
-                        >
-                          研修
-                        </span>
-                      ) : (
-                        <span
-                          className='rounded-full px-3 py-1 text-xs font-medium'
-                          style={{
-                            backgroundColor: event.backgroundColor ?? '#f3f4f6',
-                            color: '#374151'
-                          }}
-                        >
-                          予定
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>{event.title}</TableCell>
-                    <TableCell>{event.start?.toLocaleString()}</TableCell>
-                    <TableCell>{event.end?.toLocaleString()}</TableCell>
-                    <TableCell className='w-48 max-w-64 min-w-32 truncate'>
-                      <span className='block overflow-hidden text-ellipsis whitespace-nowrap'>
-                        {event.description}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <>
-          <Card className='p-3'>
-            <FullCalendar
-              locale={'ja'} // 日本語化
-              navLinks // カレンダー内の日付クリックで日表示に移動するかどうか
-              ref={calendarRef}
-              timeZone='local'
-              plugins={[
-                dayGridPlugin,
-                timeGridPlugin,
-                multiMonthPlugin,
-                interactionPlugin,
-                listPlugin
-              ]}
-              initialView='timeGridWeek'
-              headerToolbar={false}
-              slotMinTime={calendarEarliestTime}
-              slotMaxTime={calendarLatestTime}
-              allDaySlot={true}
-              allDayText='終日'
-              firstDay={0} // 0: 日曜日, 1: 月曜日
-              height={'80vh'} // 管理画面埋め込み調整
-              scrollTime='08:00:00'
-              displayEventEnd={true}
-              windowResizeDelay={0}
-              events={events}
-              slotLabelFormat={{
-                hour: 'numeric',
-                minute: '2-digit'
-                // hour12: true
-              }}
-              eventTimeFormat={{
-                hour: 'numeric',
-                minute: '2-digit'
-                // hour12: true
-              }}
-              eventBorderColor={'black'}
-              // contentHeight={'auto'} // autoだとカレンダーの時間ビューをスクロールできない
-
-              expandRows={true}
-              dayCellContent={(dayInfo) => <DayRender info={dayInfo} />}
-              // eventContent={(eventInfo) => <EventItem info={eventInfo} />}
-              dayHeaderContent={(headerInfo) => <DayHeader info={headerInfo} />}
-              eventClick={(eventInfo) => handleEventClick(eventInfo)}
-              eventChange={(eventInfo) => handleEventChange(eventInfo)}
-              select={handleDateSelect}
-              datesSet={(dates) => setViewedDate(dates.view.currentStart)}
-              dateClick={() => setEventAddOpen(true)}
-              nowIndicator // 現在時刻に赤のインジケータを表示
-              editable
-              selectable
-              dayMaxEvents // 月表示ではみ出たイベントを「+N more」の表示にする
-            />
-          </Card>
-        </>
+    <div className='flex h-full'>
+      {/* サイドバー */}
+      {sidebarOpen && (
+        <UserSearchSidebar
+          selectedUsers={selectedUsers}
+          setSelectedUsers={setSelectedUsers}
+        />
       )}
 
-      <EventEditForm
-        oldEvent={selectedOldEvent}
-        event={selectedEvent}
-        isDrag={isDrag}
-        displayButton={false}
-      />
-      <EventView event={selectedEvent} />
+      {/* サイドバー開閉トグルボタン */}
+      <Button
+        className={`z-20 h-10 w-10 rounded bg-white p-2 shadow hover:bg-gray-100 ${
+          sidebarOpen ? '' : ''
+        }`}
+        onClick={() => setSidebarOpen((prev) => !prev)}
+        aria-label={sidebarOpen ? 'サイドバーを閉じる' : 'サイドバーを開く'}
+        style={{
+          left: sidebarOpen ? '260px' : '16px', // サイドバー幅に合わせて調整
+          transition: 'left 0.2s'
+        }}
+      >
+        {sidebarOpen ? (
+          // <Menu className='h-5 w-5' />
+          <Triangle className='h-5 w-5 rotate-270' />
+        ) : (
+          <Triangle className='h-5 w-5 rotate-90' />
+        )}
+      </Button>
+
+      {/* メインカレンダー領域 */}
+      <div className='flex-1 pl-0'>
+        <div className='space-y-5'>
+          <CalendarNav
+            calendarRef={calendarRef}
+            start={selectedStart}
+            end={selectedEnd}
+            viewedDate={viewedDate}
+            searchMode={searchMode}
+            searchComponent={
+              <div className='mb-2 flex justify-end'>
+                {showSearchInput ? (
+                  <Input
+                    ref={searchInputRef}
+                    className='w-40'
+                    placeholder='予定を検索'
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    onKeyDown={handleInputKeyDown}
+                    onBlur={() => {
+                      if (!searchText) setShowSearchInput(false);
+                    }}
+                  />
+                ) : (
+                  <Button
+                    type='button'
+                    className='p-2 text-gray-500 hover:text-blue-600'
+                    onClick={() => setShowSearchInput(true)}
+                    aria-label='検索'
+                  >
+                    <Search className='h-5 w-5' />
+                  </Button>
+                )}
+              </div>
+            }
+            eventTypeFilter={eventTypeFilter}
+            setEventTypeFilter={setEventTypeFilter}
+          />
+
+          {/* 検索結果テーブル */}
+          {searchMode ? (
+            <div className='overflow-x-auto'>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>種別</TableHead>
+                    <TableHead>タイトル</TableHead>
+                    <TableHead>開始</TableHead>
+                    <TableHead>終了</TableHead>
+                    <TableHead className='w-1/3 truncate'>説明</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredEvents.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className='py-2 text-center'>
+                        該当する予定がありません
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredEvents.map((event) => (
+                      <TableRow
+                        key={event.id}
+                        className='cursor-pointer hover:bg-blue-50'
+                        onClick={() => handleSearchEventClick(event)}
+                      >
+                        {/* 種別列 */}
+                        <TableCell>
+                          {event.extendedProps?.eventType === 'training' ? (
+                            <span
+                              className='rounded-full px-3 py-1 text-xs font-medium'
+                              style={{
+                                backgroundColor:
+                                  event.backgroundColor ?? '#bfdbfe',
+                                color: '#1e40af'
+                              }}
+                            >
+                              研修
+                            </span>
+                          ) : (
+                            <span
+                              className='rounded-full px-3 py-1 text-xs font-medium'
+                              style={{
+                                backgroundColor:
+                                  event.backgroundColor ?? '#f3f4f6',
+                                color: '#374151'
+                              }}
+                            >
+                              予定
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>{event.title}</TableCell>
+                        <TableCell>{event.start?.toLocaleString()}</TableCell>
+                        <TableCell>{event.end?.toLocaleString()}</TableCell>
+                        <TableCell className='w-48 max-w-64 min-w-32 truncate'>
+                          <span className='block overflow-hidden text-ellipsis whitespace-nowrap'>
+                            {event.description}
+                          </span>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <>
+              <Card className='p-3'>
+                <FullCalendar
+                  locale={'ja'} // 日本語化
+                  navLinks // カレンダー内の日付クリックで日表示に移動するかどうか
+                  ref={calendarRef}
+                  timeZone='local'
+                  plugins={[
+                    dayGridPlugin,
+                    timeGridPlugin,
+                    multiMonthPlugin,
+                    interactionPlugin,
+                    listPlugin
+                  ]}
+                  initialView='timeGridWeek'
+                  headerToolbar={false}
+                  slotMinTime={calendarEarliestTime}
+                  slotMaxTime={calendarLatestTime}
+                  allDaySlot={true}
+                  allDayText='終日'
+                  firstDay={0} // 0: 日曜日, 1: 月曜日
+                  height={'80vh'} // 管理画面埋め込み調整
+                  scrollTime='08:00:00'
+                  displayEventEnd={true}
+                  windowResizeDelay={0}
+                  events={events}
+                  slotLabelFormat={{
+                    hour: 'numeric',
+                    minute: '2-digit'
+                    // hour12: true
+                  }}
+                  eventTimeFormat={{
+                    hour: 'numeric',
+                    minute: '2-digit'
+                    // hour12: true
+                  }}
+                  eventBorderColor={'black'}
+                  // contentHeight={'auto'} // autoだとカレンダーの時間ビューをスクロールできない
+
+                  expandRows={true}
+                  dayCellContent={(dayInfo) => <DayRender info={dayInfo} />}
+                  // eventContent={(eventInfo) => <EventItem info={eventInfo} />}
+                  dayHeaderContent={(headerInfo) => (
+                    <DayHeader info={headerInfo} />
+                  )}
+                  eventClick={(eventInfo) => handleEventClick(eventInfo)}
+                  eventChange={(eventInfo) => handleEventChange(eventInfo)}
+                  select={handleDateSelect}
+                  datesSet={(dates) => setViewedDate(dates.view.currentStart)}
+                  dateClick={() => setEventAddOpen(true)}
+                  nowIndicator // 現在時刻に赤のインジケータを表示
+                  editable
+                  selectable
+                  dayMaxEvents // 月表示ではみ出たイベントを「+N more」の表示にする
+                />
+              </Card>
+            </>
+          )}
+
+          <EventEditForm
+            oldEvent={selectedOldEvent}
+            event={selectedEvent}
+            isDrag={isDrag}
+            displayButton={false}
+          />
+          <EventView event={selectedEvent} />
+        </div>
+      </div>
     </div>
   );
 }

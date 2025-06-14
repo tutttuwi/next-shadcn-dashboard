@@ -115,9 +115,16 @@ const getRandomDays = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min + 1)) + min;
 
 const currentDate = new Date();
+export interface Member {
+  staffNo: number;
+  name: string;
+  email: string;
+  position: string;
+  rank: string;
+}
 
 // ダミーメンバー（日本人の名前・役職・階級で15人）
-export const memberCandidates = [
+export const memberCandidates: Member[] = [
   {
     email: 'sato@example.com',
     name: '佐藤 太郎',
