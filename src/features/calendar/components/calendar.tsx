@@ -416,6 +416,8 @@ export default function Calendar() {
         <UserSearchSidebar
           selectedUsers={selectedUsers}
           setSelectedUsers={setSelectedUsers}
+          start={selectedStart}
+          end={selectedEnd}
         />
       )}
 

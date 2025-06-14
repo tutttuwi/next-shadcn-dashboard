@@ -325,7 +325,7 @@ export default function CalendarNav({
               </Tabs>
             </div>
             {/* Add event button  */}
-            <EventAddForm start={start} end={end} />
+            {/* <EventAddForm start={start} end={end} /> */}
           </>
         )}
 

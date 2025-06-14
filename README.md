@@ -114,3 +114,7 @@ Cheers! 🥂
 
 - `.husky`フォルダ配下で設定（一旦コメントアウトしている）
 
+### カラー指定
+
+- [globals.css](src/app/globals.css)
+  - primaryカラーなどの指定はこちらで設定

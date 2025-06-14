@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { Input } from '@/features/calendar/components/ui/input';
 import { X } from 'lucide-react';
 import { Member, memberCandidates } from '@/features/calendar/utils/data';
+import { EventAddForm } from './event-add-form';
 
 interface UserSearchSidebarProps {
   selectedUsers: Member[];
   setSelectedUsers: React.Dispatch<React.SetStateAction<Member[]>>;
+  start: Date;
+  end: Date;
 }
 
 export function UserSearchSidebar({
   selectedUsers,
-  setSelectedUsers
+  setSelectedUsers,
+  start,
+  end
 }: UserSearchSidebarProps) {
   const [input, setInput] = useState('');
   // const [selectedUsers, setSelectedUsers] = useState<typeof memberCandidates>(
@@ -33,6 +38,9 @@ export function UserSearchSidebar({
 
   return (
     <div className='flex h-full w-64 flex-col border-r bg-white p-4'>
+      {/* Add event button  */}
+      <EventAddForm start={start} end={end} />
+      <hr className='my-3' />
       <div className='mb-2 text-lg font-bold'>ユーザー検索</div>
       <Input
         placeholder='ユーザー名・メールで検索'
