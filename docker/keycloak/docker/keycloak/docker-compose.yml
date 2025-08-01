@@ -1,0 +1,91 @@
+version: '3'
+volumes:
+  postgres_data:
+    driver: local
+
+services:
+  postgres:
+    image: library/postgres:15
+    container_name: 'keycloak_postgres'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    networks:
+      - share-net
+
+  keycloak:
+    image: bitnami/keycloak:22.0.5
+    container_name: 'keycloak_app'
+    environment:
+      JAVA_OPTS: '-Xmx512m -Xms256m'
+      KEYCLOAK_DATABASE_VENDER: POSTGRES
+      KEYCLOAK_DATABASE_HOST: postgres
+      KEYCLOAK_DATABASE_PORT: 5432
+      KEYCLOAK_DATABASE_NAME: keycloak
+      KEYCLOAK_DATABASE_SCHEMA: public
+      KEYCLOAK_DATABASE_USER: keycloak
+      KEYCLOAK_DATABASE_PASSWORD: password
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_LOG_LEVEL: INFO
+      KEYCLOAK_HTTP_PORT: 8090
+      ROXY_ADDRESS_FORWARDING: 'true'
+      KEYCLOAK_EXTRA_ARGS: '--import-realm'
+      TZ: Asia/Tokyo
+    volumes:
+      - ./keycloak-realm-export.json:/opt/bitnami/keycloak/data/import/realm-export.json
+      #      - ./providers/keycloak-template-1.0-SNAPSHOT.jar:/opt/bitnami/keycloak/providers/keycloak-template-1.0-SNAPSHOT.jar
+      - ./themes/custom-theme:/opt/bitnami/keycloak/themes/custom-theme
+    #      - ./conf/keycloak.conf:/opt/bitnami/keycloak/conf/keycloak.conf
+    ports:
+      - 8090:8090
+    depends_on:
+      - postgres
+      - maildev
+    restart: always
+    networks:
+      - share-net
+  maildev:
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+    networks:
+      - share-net
+  # oauth2-proxy:
+  #   image: quay.io/oauth2-proxy/oauth2-proxy:v7.4.0-amd64
+  #   ports:
+  #     - 8880:4180
+  #   environment:
+  #     OAUTH2_PROXY_PROVIDER: oidc
+  #     OAUTH2_PROXY_CLIENT_ID: sample-user
+  #     OAUTH2_PROXY_CLIENT_SECRET: Rvr9Z20En8Zp1TOxx7H6LnxU2hhdIogM
+  #     OAUTH2_PROXY_REDIRECT_URL: http://localhost:8880/oauth2/callback
+  #     OAUTH2_PROXY_OIDC_ISSUER_URL: http://keycloak:8090/realms/sample
+  #     OAUTH2_PROXY_COOKIE_SECRET: "01234567890123456789012345678901"
+  #     OAUTH2_PROXY_COOKIE_SECURE: "false"
+  #     OAUTH2_PROXY_COOKIE_NAME: "demo_cookie"
+  #     OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+  #     OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+  #     OAUTH2_PROXY_UPSTREAMS: http://whoami:3000/ #有効なコンテナ名＋Portを指定しないといけない
+  #     OAUTH2_PROXY_PASS_AUTHORIZATION_HEADER: "true"
+  #   restart: always
+  #   depends_on:
+  #     - keycloak
+  #   networks:
+  #     - share-net
+  # whoami:
+  #   build: ./whoami
+  #   ports:
+  #     - "3000:3000"
+  #   container_name: "whoami"
+  #   networks:
+  #     - keycloak-net
+
+networks:
+  share-net:
+    external: true
+    driver: bridge

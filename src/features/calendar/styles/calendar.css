@@ -1,0 +1,158 @@
+/* Tailwindv4対応 */
+@reference '../../../app/globals.css';
+
+:root {
+  --fc-border-color: lightgray;
+  /* 予定内の文字色は GoogleCalendar に合わせる */
+  --fc-event-text-color: #131314;
+  /* --fc-page-bg-color: none; */
+}
+.dark {
+  --fc-border-color: gray;
+}
+
+/* Removing borders */
+
+/* .fc-scrollgrid {
+  @apply border-none;
+}
+
+.fc tbody tr:last-child td:first-child {
+  @apply border-l-0;
+}
+
+.fc tbody tr:last-child td:last-child {
+  @apply border-r-0 border-b-0;
+}
+
+.fc-theme-standard th {
+  @apply border-r-0;
+} */
+
+/* Setting header size */
+
+/* .fc-col-header-cell-cushion {
+  @apply flex h-[56px] items-center;
+} */
+
+/* Setting left time size */
+
+/* .fc-timegrid-slot {
+  @apply h-[28px];
+}
+
+.fc-timegrid-slot-label-cushion {
+  @apply text-xs font-light;
+} */
+
+/* Setting cell colors */
+
+/* td.fc-daygrid-day.fc-day {
+  @apply hover:bg-secondary;
+}
+
+td.fc-daygrid-day.fc-day.fc-day-today {
+  @apply bg-secondary-foreground;
+}
+
+.fc-day-today {
+  @apply bg-inherit;
+}
+
+.fc-day-other {
+  @apply dark:bg-secondary bg-gray-200;
+}
+
+.fc-daygrid-day-top {
+  @apply flex h-[16px] w-full flex-row items-center;
+}
+
+.fc-daygrid-dot-event {
+  @apply hover:bg-blue-50;
+}
+
+.fc-daygrid-event-harness {
+  @apply pr-2 transition-all hover:scale-[1.02] hover:cursor-pointer hover:bg-none;
+}
+
+.fc-timegrid-event-harness {
+  @apply hover:cursor-pointer hover:bg-none;
+}
+
+.fc-event-main {
+  @apply flex h-full w-full;
+}
+
+.fc-event {
+  @apply flex min-w-full border-none;
+}
+
+.fc-daygrid-event {
+  @apply mx-1;
+}
+
+.fc-timegrid-event {
+  @apply px-1;
+}
+
+td.fc-daygrid-day.fc-day {
+  pointer-events: none;
+}
+
+.fc-event {
+  pointer-events: all;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.fc-daygrid-event-harness {
+  pointer-events: all;
+}
+
+.fc-daygrid-day-top {
+  pointer-events: none;
+} */
+
+/* +N more 表示 のバックグラウンド設定のため追加 */
+.fc-more-popover {
+  @apply border border-gray-200 bg-white text-black dark:border-gray-600 dark:bg-gray-800 dark:text-white;
+}
+
+/* +N more 表示 の上部に表示される領域 不要なため非表示にする */
+.fc-more-popover-misc {
+  @apply hidden;
+}
+
+/* カレンダー領域のボディー部分 カレンダー領域を横幅いっぱいまで動的に広げるため */
+.fc.fc-media-screen.fc-direction-ltr.fc-theme-standard {
+  width: 100%;
+}
+
+/* 月表示(dayGrid)の土曜・日曜 */
+.fc-day-sat {
+  background-color: #e0f2fe !important;
+  /* 土曜: 淡い青 (Tailwind blue-100) */
+}
+
+.fc-day-sun {
+  background-color: #fee2e2 !important;
+  /* 日曜: 淡い赤 (Tailwind red-100) */
+}
+
+/* 週表示(timeGrid)の土曜・日曜 */
+.fc-timegrid-col-sat {
+  background-color: #e0f2fe !important;
+}
+
+.fc-timegrid-col-sun {
+  background-color: #fee2e2 !important;
+}
+
+/* マルチマンスビュー対応（必要なら） */
+.fc-multimonth-day-sat {
+  background-color: #e0f2fe !important;
+}
+
+.fc-multimonth-day-sun {
+  background-color: #fee2e2 !important;
+}

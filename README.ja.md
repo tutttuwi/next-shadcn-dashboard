@@ -7,13 +7,13 @@
 <div align="center">Built with the Next.js 15 App Router</div>
 <br />
 <div align="center">
-<a href="https://dub.sh/shadcn-dashboard">View Demo</a>
+<a href="#">デモ画面（調整中）</a>
 <span>
 </div>
 
 ## Overview
 
-This is a starter template using the following stack:
+以下の技術スタックを利用
 
 - Framework - [Next.js 15](https://nextjs.org/13)
 - Language - [TypeScript](https://www.typescriptlang.org)
@@ -30,9 +30,9 @@ This is a starter template using the following stack:
 - Pre-commit Hooks - [Husky](https://typicode.github.io/husky/)
 - Formatting - [Prettier](https://prettier.io)
 
-_If you are looking for a React admin dashboard starter, here is the [repo](https://github.com/Kiranism/react-shadcn-dashboard-starter)._
+Reactの管理画面スターターテンプレートを探しているならこのリポジトリを参照してください！
 
-## Pages
+## ページ一覧
 
 | Pages                                                                                 | Specifications                                                                                                                                                 |
 | :------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -45,7 +45,7 @@ _If you are looking for a React admin dashboard starter, here is the [repo](http
 | [Not Found](https://next-shadcn-dashboard-starter.vercel.app/dashboard/notfound)      | Not Found Page Added in the root level                                                                                                                         |
 | -                                                                                     | -                                                                                                                                                              |
 
-## Feature based organization
+## 機能一覧
 
 ```plaintext
 src/
@@ -87,7 +87,7 @@ src/
 ## Getting Started
 
 > [!NOTE]  
-> We are using **Next 15** with **React 19**, follow these steps:
+> **Next 15** と **React 19** を以下のステップに沿って使います。
 
 Clone the repo:
 
@@ -95,26 +95,49 @@ Clone the repo:
 git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git
 ```
 
-- `pnpm install` ( we have legacy-peer-deps=true added in the .npmrc)
-- Create a `.env.local` file by copying the example environment file:
+- `pnpm install` ( .npmrcに `legacy-peer-deps=true` を追加しておいてください)
+- 以下のコマンドで `.env.local` ファイルを作成
   `cp env.example.txt .env.local`
-- Add the required environment variables to the `.env.local` file.
+- `.env.local` ファイルに必須パラメータを指定
+- `pnpx auth secret` を実行しSecretを自動生成
 - `pnpm run dev`
 
-You should now be able to access the application at http://localhost:3000.
+ローカル環境へアクセス http://localhost:3000.
 
 > [!WARNING]
-> After cloning or forking the repository, be cautious when pulling or syncing with the latest changes, as this may result in breaking conflicts.
+> リポジトリをクローンまたはフォークした後、最新の変更をプルまたは同期するときは、衝突を壊す可能性があるので注意してください。
 
-Cheers! 🥂
+頑張りましょう! 🥂
 
-## 設定メモ
+## アイコン
 
-### husky precommit設定
+- <https://lucide.dev/>
 
-- `.husky`フォルダ配下で設定（一旦コメントアウトしている）
+## 改修タスク
 
-### カラー指定
+### カレンダー機能
 
-- [globals.css](src/app/globals.css)
-  - primaryカラーなどの指定はこちらで設定
+- [ ] 00:00-24:00まで表示してスクロールできるようにする
+- [ ] shadcnのカレンダーエレメントを配置して、表示カレンダーと動機させる
+- [ ] グループ内のメンバ検索ボックスを追加する
+  - ダミーメンバを検索して表示できるようにする- Escキーでカレンダーを閉じる
+- [ ] カレンダー検索ボックスを追加する
+- [ ] 何もない領域でドラッグドロップしたときに自動的にカレンダー作成画面を開く
+- [x] タイトルが長文になった際のレイアウト不正を修正
+- [x] カレンダー領域のデザイン修正
+  - 位置を中央配置にする
+  - ３０分枠のカレンダーを設定しても枠内に文字が収まるようにする（文字サイズ調整、タイトルと時間のみの表示にするなど）
+- [x] カレンダー重なり修正
+  - 同じ色で重なっても見やすいように枠線をつける
+
+## チャット機能
+
+- [x] MostMatterと連携させる
+  - [x] KeyCloak認証で連携し同一ユーザで利用できるようにする
+  - [ ] 画面に埋め込めないか調査
+
+## データ検索機能
+
+- [ ] 検索ボックスと検索結果表示用のテーブルを表示するページ追加
+  - [ ] レコード選択時に編集モーダルの表示
+  - [ ] テーブルはDataTableを利用して作成
