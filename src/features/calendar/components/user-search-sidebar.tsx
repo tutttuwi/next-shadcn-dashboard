@@ -25,7 +25,9 @@ export function UserSearchSidebar({
   start,
   end,
   setUserEvents // 追加: カレンダー側でuseStateして渡す
-}: UserSearchSidebarProps & { setUserEvents: (events: any[]) => void }) {
+}: UserSearchSidebarProps & {
+  setUserEvents: React.Dispatch<React.SetStateAction<any[]>>;
+}) {
   const [input, setInput] = useState('');
   const [hoveredEmail, setHoveredEmail] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(start);
